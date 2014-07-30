@@ -1,0 +1,45 @@
+text TIME FOR ORIENTATION: 4 SEC.
+wait 4
+text WELCOME! IT'S YOUR FIRST DAY.
+wait 2
+spawn speedy 0
+wait death
+text GOOD JOB
+text FIRST DROID DESTROYED.
+wait 5
+spawn speedy 1
+wait death
+wait 2
+text GOT IT!
+wait 5
+spawn speedy 2
+wait death
+wait 3
+text OK. THE NEXT ONE'S TRICKY!
+wait 2
+spawn wasp 2
+wait death
+text GOOD BLAST.
+wait 5
+text WATCH OUT FOR HOMING MISSILES NOW!
+wait 3
+spawn launcher 1
+wait for death
+NICE JOB.
+wait 4
+spawn speedy 0
+wait 5
+text CAUTION: NEXT DROID IN 10 SEC !
+wait 10
+spawn speedy 1
+wait death
+wait 4
+spawn launcher 0
+wait death
+wait 4
+spawn wasp 2
+wait 5
+spawn launcher 0
+wait death
+wait 4
+text MADE IT! FIRST DAY IS COMPLETE
