@@ -4,6 +4,7 @@
 #include "lib/gfx/shape.h"
 #include "lib/hi_res_time.h"
 #include "lib/input.h"
+#include "lib/sound/sound_system.h"
 #include "bullet.h"
 #include "level.h"
 
@@ -81,9 +82,14 @@ void ShipPlayer::Advance()
 		}
 	
 		if (onJumpPad)
+        {
 			m_wackVel.y = 70.0f;
+            g_soundSystem->PlayWave("jump_pad.wav", &m_pos);
+        }
 		else
+        {
 			m_wackVel.y *= -0.5f;
+        }
 
 		m_pos.y = PLAYER_SHIP_HOVER_HEIGHT;
 	}
@@ -115,6 +121,8 @@ void ShipPlayer::Advance()
 				m_wackVel = fromCentre * (m_speed * 0.6f);
 				m_pos += m_wackVel * 0.1f;
 				m_speed = 0.0f;
+
+                g_soundSystem->PlaySynth("player_collide.wav", &m_pos);
 			}
 		}
 	}

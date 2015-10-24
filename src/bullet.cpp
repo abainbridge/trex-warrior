@@ -19,7 +19,7 @@ Bullet::Bullet(GameObj *owner, Vector3 const &pos, Vector3 const &front)
 {
 	m_owner = owner;
 	m_vel = front * 1000.0f;
-	g_soundSystem->PlaySound("bloop.sh", &pos);
+    g_soundSystem->PlayWave("player_shoot.wav", &pos);
 }
 
 
@@ -60,9 +60,7 @@ void Bullet::Advance()
 				// Bullet has hit something, destroy the bullet
 				g_level->DeleteObj(this);
                 
-                g_soundSystem->PlaySound("crash.sh", &m_pos);
-
-				o->Hit(1.0f);
+				o->TakeHit(1.0f);
 
 				return;	// This bullet is dead now. No need to do the rest of the time slices.
 			}

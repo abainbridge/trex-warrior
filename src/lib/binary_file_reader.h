@@ -21,8 +21,8 @@ public:
 	short			ReadS16		();
 	int				ReadS32		();
 	unsigned char	ReadU8		();
-//	unsigned short	ReadU16		();
-//	unsigned int	ReadU32		();
+    unsigned short	ReadU16		() { return (unsigned)ReadS16(); }
+    unsigned int	ReadU32		() { return (unsigned)ReadS32(); }
 
 	unsigned int	ReadBytes	(unsigned int count, unsigned char *buffer);
 };

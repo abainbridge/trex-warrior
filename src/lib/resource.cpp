@@ -7,6 +7,7 @@
 #include "lib/gfx/bitmap.h"
 #include "lib/gfx/shape.h"
 #include "lib/sound/sound_script.h"
+#include "lib/sound/sound_wave.h"
 #include "lib/binary_file_reader.h"
 #include "lib/debug_utils.h"
 #include "lib/filesys_utils.h"
@@ -140,6 +141,28 @@ SoundScript *Resource::GetSoundScript(char const *name)
 	}
 
 	return theScript;
+}
+
+
+SoundWave *Resource::GetSoundSample(char const *name)
+{
+    SoundWave *theSample = m_soundSamples.GetData(name);
+    if (!theSample)
+    {
+        char fullPath[512];
+
+        sprintf(fullPath, "data/sounds/%s", name);
+        strlwr(fullPath);
+        if (DoesFileExist(fullPath)) 
+        {
+            theSample = new SoundWave;
+            theSample->Load(fullPath);
+        }
+
+        m_soundSamples.PushBack(name, theSample);
+    }
+
+    return theSample;
 }
 
 

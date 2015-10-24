@@ -6,6 +6,7 @@
 
 class Shape;
 class SoundScript;
+class SoundWave;
 
 
 class Resource
@@ -18,6 +19,7 @@ protected:
 	HashTable<int>				m_textures;
 	HashTable<Shape *>			m_shapes;
 	HashTable<SoundScript *>	m_soundScripts;
+    HashTable<SoundWave *>    m_soundSamples;
 
 public:
     Resource();
@@ -30,6 +32,7 @@ public:
 	int             GetTexture			(char const *name, bool mipMapping=true, bool masked=true);
 	Shape			*GetShape			(char const *name);
 	SoundScript     *GetSoundScript		(char const *name);
+    SoundWave     *GetSoundSample     (char const *name);
 
     void			FlushOpenGlState	();
 	void			RegenerateOpenGlState();

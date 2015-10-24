@@ -42,7 +42,7 @@ public:
     virtual void Render() = 0;
 
 	virtual char const *GetName() { DebugAssert(0); return "¬"; }
-	virtual void Hit(float force) {}
+	virtual void TakeHit(float force) {}
 
 	// Properties to consider adding
 	// 1. bool BulletCausesDamage

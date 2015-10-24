@@ -3,6 +3,7 @@
 
 #include "lib/gfx/debug_render.h"
 #include "lib/gfx/text_renderer.h"
+#include "lib/sound/sound_system.h"
 #include "lib/hi_res_time.h"
 #include "lib/text_file_reader.h"
 #include "lib/window_manager.h"
@@ -119,6 +120,7 @@ void Script::BeginNextCommand()
 				DebugAssert(0);
 			}
 			g_level->AddObj(s);
+            g_soundSystem->PlayWave("enemy_appears.wav", &s->m_pos);
 
 			LiteString text = "DROID APPEARS! TYPE ";
 			text += s->GetName();

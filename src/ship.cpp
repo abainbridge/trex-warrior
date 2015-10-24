@@ -1,11 +1,12 @@
 #include "lib/universal_include.h"
 #include "ship.h"
 
+#include "lib/gfx/shape.h"
+#include "lib/sound/sound_system.h"
 #include "lib/input.h"
 #include "lib/math_utils.h"
 #include "lib/matrix34.h"
 #include "lib/resource.h"
-#include "lib/gfx/shape.h"
 #include "app.h"
 #include "camera.h"
 #include "level.h"
@@ -31,11 +32,12 @@ Ship::Ship(int type, Vector3 const &pos)
 }
 
 
-void Ship::Hit(float force)
+void Ship::TakeHit(float force)
 {
 	if (m_type == ObjTypePlayerShip)
 	{
 		g_app->m_camera->CreateShake(0.2f);
+        g_soundSystem->PlayWave("player_hit.wav", &m_pos);
 	}
 	else
 	{
@@ -68,7 +70,9 @@ void Ship::Hit(float force)
 				g_particleSystem.CreateParticle(pos, vel);
 			}
 		}
-	}
+
+        g_soundSystem->PlayWave("explosion.wav", &m_pos);
+    }
 }
 
 

@@ -18,7 +18,7 @@ public:
 public:
 	Ship(int type, Vector3 const &pos);
 
-	void Hit(float force);
+	virtual void TakeHit(float force);
 
 	void Render();
 };

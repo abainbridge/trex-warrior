@@ -995,6 +995,14 @@
 					RelativePath="..\..\..\src\lib\sound\sound_system.h"
 					>
 				</File>
+				<File
+					RelativePath="..\..\..\src\lib\sound\sound_wave.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\src\lib\sound\sound_wave.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<File

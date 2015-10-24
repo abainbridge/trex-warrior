@@ -76,7 +76,7 @@ void Missile::Advance()
 				// Missile has hit something, destroy the missile
 				g_level->DeleteObj(this);
 
-				o->Hit(4.0f);
+				o->TakeHit(4.0f);
 
 				return;	// This missile is dead now. No need to do the rest of the time slices.
 			}

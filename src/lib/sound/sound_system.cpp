@@ -3,11 +3,67 @@
 
 #include "lib/sound/sound_device.h"
 #include "lib/sound/sound_generator.h"
+#include "lib/sound/sound_wave.h"
 #include "lib/resource.h"
 
 
 SoundSystem *g_soundSystem = NULL;
 
+
+
+// ***************************************************************************
+// SoundChannelBase
+// ***************************************************************************
+
+SoundChannelBase::SoundChannelBase() 
+{ 
+    m_active = false; 
+}
+
+
+unsigned short SoundChannelBase::GetVolume(Vector3 const *listenerPos)
+{
+    unsigned short channelVol = 1 << 15;
+
+    if (m_usePos)
+    {
+        float distFromListenerSqrd = (*listenerPos - m_pos).Len();
+        float vol = 50.0f / distFromListenerSqrd;
+        if (vol < 1.0f)
+            channelVol *= vol;
+    }
+
+    return channelVol;
+}
+
+
+// ***************************************************************************
+// SoundChannelSynth
+// ***************************************************************************
+
+SoundChannelSynth::SoundChannelSynth()
+: SoundChannelBase()
+{ 
+    m_type = TypeSynth; 
+    m_nextSampleIndex = SOUND_SYNTH_NUM_OUTPUT_SAMPLES; 
+}
+
+
+// ***************************************************************************
+// SoundChannelWave
+// ***************************************************************************
+
+SoundChannelWave::SoundChannelWave() 
+: SoundChannelBase()
+{ 
+    m_type = TypeWave;
+    m_index = 0;
+}
+
+
+// ***************************************************************************
+// SoundSystem
+// ***************************************************************************
 
 static void SoundCallback(StereoSample *buf, unsigned int numSamples)
 {
@@ -27,15 +83,15 @@ SoundSystem::SoundSystem()
 	for (int i = 128; i < 256; i++)
 		m_triangleLut[i] = 32767 + (128 - i) * (65535 / 128);
 
-	m_numChannels = 4;
-	m_channels = new SoundChannel[4];
+	m_numSynthChannels = 2;
+	m_synthChannels = new SoundChannelSynth[m_numSynthChannels];
+
+    m_numWaveChannels = 4;
+    m_waveChannels = new SoundChannelWave[m_numWaveChannels];
 
 	g_soundDevice = new SoundDevice();
 	m_mixerBuf = new int [g_soundDevice->GetSamplesPerChunk()];
 	g_soundDevice->SetCallback(SoundCallback);
-
-	for (int i = 0; i < m_numChannels; i++)
-		m_channels[i].m_active = false;
 }
 
 
@@ -50,19 +106,10 @@ void SoundSystem::DeviceCallback(StereoSample *buf, unsigned int numSamples)
 {
 	memset(m_mixerBuf, 0, sizeof(int) * numSamples);
 
-	for (int j = 0; j < m_numChannels; j++)
+	for (int j = 0; j < m_numSynthChannels; j++)
 	{
-		SoundChannel *chan = &m_channels[j];
-
-        unsigned short channelVol = 1 << 15;
-        if (chan->m_usePos)
-        {
-            float distFromListenerSqrd = (m_listenerPos - chan->m_pos).Len();
-            float vol = 50.0f / distFromListenerSqrd;
-            if (vol < 1.0f)
-                channelVol *= vol;
-        }
-
+		SoundChannelSynth *chan = &m_synthChannels[j];
+        unsigned short channelVol = chan->GetVolume(&m_listenerPos);
 		int mixerBufOffset = 0;
 
 		while (chan->m_active)
@@ -96,33 +143,100 @@ void SoundSystem::DeviceCallback(StereoSample *buf, unsigned int numSamples)
 		}		
 	}
 
+    for (int j = 0; j < m_numWaveChannels; j++)
+    {
+        SoundChannelWave *chan = &m_waveChannels[j];
+        unsigned short channelVol = chan->GetVolume(&m_listenerPos);
+        int mixerBufOffset = 0;
+
+        if (chan->m_active)
+        {
+            // Add samples from this wave to the mix buffer
+            for (int i = 0; i < numSamples; i++)
+            {
+                int index = (int)chan->m_index;
+                int sample = chan->m_wave->m_samples[index];
+                sample = (sample * channelVol) >> 16;
+                m_mixerBuf[mixerBufOffset] += sample;
+                mixerBufOffset++;
+                chan->m_index += 0.5f;
+
+                if (chan->m_index >= chan->m_wave->m_numSamples)
+                {
+                    chan->m_active = false;
+                    break;
+                }
+            }
+        }
+    }
+
 	// Mix the channels into the SoundDevice's buffer
-	for (int i = 0; i < numSamples; i++)
+	int totalNumChannels = m_numSynthChannels + m_numWaveChannels;
+    for (int i = 0; i < numSamples; i++)
 	{
-		buf[i].m_left = m_mixerBuf[i] / m_numChannels;
+		buf[i].m_left = m_mixerBuf[i] / totalNumChannels;
 		buf[i].m_right = buf[i].m_left;
 	}
 }
 
 
-#undef PlaySound
-void SoundSystem::PlaySound(char const *filename, Vector3 const *pos)
+void SoundSystem::PlaySynth(char const *filename, Vector3 const *pos)
 {
 	SoundScript *soundScript = g_resourceManager.GetSoundScript(filename);
+    if (!soundScript)
+    {
+        ReleaseAssert("Couldn't open sound script '%s'", filename);
+        return;
+    }
 
 	int freeChannelIndex = 0;
-	for (int i = 0; i < m_numChannels; i++)
+	for (int i = 0; i < m_numSynthChannels; i++)
 	{
-		if (!m_channels[i].m_active)
+		if (!m_synthChannels[i].m_active)
 		{
 			freeChannelIndex = i;
 			break;
 		}
 	}
 	
-    SoundChannel *channel = &m_channels[freeChannelIndex];
+    SoundChannelSynth *channel = &m_synthChannels[freeChannelIndex];
 	channel->m_active = true;
 	channel->m_synth.Init(soundScript);
+    if (pos)
+    {
+        channel->m_pos = *pos;
+        channel->m_usePos = true;
+    }
+    else
+    {
+        channel->m_usePos = false;
+    }
+}
+
+
+void SoundSystem::PlayWave(char const *filename, Vector3 const *pos)
+{
+    SoundWave *soundWave = g_resourceManager.GetSoundSample(filename);
+    if (!soundWave)
+    {
+        ReleaseAssert("Couldn't open sound sample '%s'", filename);
+        return;
+    }
+
+    int freeChannelIndex = 0;
+    for (int i = 0; i < m_numWaveChannels; i++)
+    {
+        if (!m_waveChannels[i].m_active)
+        {
+            freeChannelIndex = i;
+            break;
+        }
+    }
+
+    SoundChannelWave *channel = &m_waveChannels[freeChannelIndex];
+    channel->m_active = true;
+    channel->m_wave = soundWave;
+    channel->m_index = 0.0f;
     if (pos)
     {
         channel->m_pos = *pos;
