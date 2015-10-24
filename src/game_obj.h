@@ -2,6 +2,7 @@
 #define INCLUDE_GAME_OBJ_H
 
 
+#include "lib/gfx/rgb_colour.h"
 #include "lib/vector3.h"
 
 
@@ -43,6 +44,8 @@ public:
 
 	virtual char const *GetName() { DebugAssert(0); return "¬"; }
 	virtual void TakeHit(float force) {}
+
+    virtual RgbaColour GetRadarColour() = 0;
 
 	// Properties to consider adding
 	// 1. bool BulletCausesDamage

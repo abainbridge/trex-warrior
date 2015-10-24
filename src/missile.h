@@ -19,6 +19,8 @@ public:
 	void Advance();
 	void Render();
 
+    virtual RgbaColour GetRadarColour() { return RgbaColour(255, 255, 255); }
+
 	void Hit(float force);
 };
 

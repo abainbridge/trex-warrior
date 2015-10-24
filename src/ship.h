@@ -20,6 +20,8 @@ public:
 
 	virtual void TakeHit(float force);
 
+    virtual RgbaColour GetRadarColour() { return RgbaColour(0, 255, 255); }
+
 	void Render();
 };
 

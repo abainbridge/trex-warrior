@@ -26,6 +26,9 @@ void RenderRadar()
 	for (int i = 0; i < numObjects; i++)
 	{
 		GameObj *o = g_level->m_objects[i];
+        
+        RgbaColour col = o->GetRadarColour();
+        glColor3ub(col.r, col.g, col.b);
 
 		float x = o->m_pos.x - playerPos.x;
 		float y = o->m_pos.z - playerPos.z;

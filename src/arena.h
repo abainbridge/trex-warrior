@@ -17,7 +17,10 @@ public:
 	Arena(Vector3 pos, Vector3 front);
 
 	bool IsInside(Vector3 pos);	// Returns true if the specified vector is within the bounds of the arena
-	void Render();
+
+    virtual RgbaColour GetRadarColour() { return RgbaColour(0, 0, 0, 255); }
+
+    void Render();
 };
 
 

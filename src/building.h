@@ -14,7 +14,9 @@ class Building: public GameObj
 public:
 	Building(Vector3 pos, Vector3 front);
 
-	void Render();
+    virtual RgbaColour GetRadarColour() { return RgbaColour(0, 255, 0); }
+
+    void Render();
 };
 
 

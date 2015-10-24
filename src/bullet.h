@@ -20,6 +20,8 @@ public:
 
 	void Advance();
 	void Render();
+
+    virtual RgbaColour GetRadarColour() { return RgbaColour(255, 190, 0); }
 };
 
 
