@@ -1343,6 +1343,14 @@
 			>
 		</File>
 		<File
+			RelativePath="..\..\..\src\hud_text.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\src\hud_text.h"
+			>
+		</File>
+		<File
 			RelativePath="..\..\..\src\level.cpp"
 			>
 			<FileConfiguration

@@ -3,19 +3,13 @@
 
 #include "lib/gfx/debug_render.h"
 #include "lib/gfx/text_renderer.h"
-#include "lib/sound/sound_system.h"
 #include "lib/hi_res_time.h"
 #include "lib/text_file_reader.h"
 #include "lib/window_manager.h"
 #include "app.h"
 #include "game_obj.h"
+#include "hud_text.h"
 #include "level.h"
-#include "ship_launcher.h"
-#include "ship_speedy.h"
-#include "ship_wasp.h"
-
-
-#define TEXT_DISPLAY_TIME 5.0f
 
 
 Script::Script(char const *filename)
@@ -93,7 +87,7 @@ void Script::BeginNextCommand()
 		switch (si->m_type)
 		{
 		case ScriptItem::CommandText:
-			ShowText(si->m_text.m_str);
+			g_hudText.ShowText(si->m_text.m_str);
 			break;
 		case ScriptItem::CommandWait:
 			if (si->m_waitUntil > 0)
@@ -103,31 +97,7 @@ void Script::BeginNextCommand()
 			break;
 		case ScriptItem::CommandSpawn:
 			Vector3 pos = *(m_spawnPoints[si->m_spawnPoint]);
-			
-			Ship *s = NULL;
-			switch (si->m_objTypeToSpawn)
-			{
-			case GameObj::ObjTypeSpeedy:
-				s = new Speedy(pos);
-				break;
-			case GameObj::ObjTypeWasp:
-				s = new Wasp(pos);
-				break;
-			case GameObj::ObjTypeLauncher:
-				s = new Launcher(pos);
-				break;
-			default:
-				DebugAssert(0);
-			}
-			g_level->AddObj(s);
-            g_soundSystem->PlayWave("enemy_appears.wav", &s->m_pos);
-
-			LiteString text = "DROID APPEARS! TYPE ";
-			text += s->GetName();
-			text += ".";
-			text.ToUpper();
-			ShowText(text.m_str);
-
+			g_level->SpawnEnemy(si->m_objTypeToSpawn, &pos);
 			break;
 		}
 
@@ -162,18 +132,6 @@ void Script::Advance()
 }
 
 
-void Script::Render2d()
-{
-	int x = g_windowManager->ScreenW() * 0.5f;
-	int y = g_windowManager->ScreenH() * 0.65f;
-
-	if (g_gameTime < m_textEndTime1)
-		g_gameFont.DrawText2dCentre(x, y + 25, 25, m_text1.m_str);
-	if (g_gameTime < m_textEndTime2)
-		g_gameFont.DrawText2dCentre(x, y, 25, m_text2.m_str);
-}
-
-
 void Script::Render3d()
 {
 // 	Vector3 c(*(m_spawnPoints[0]));
@@ -181,11 +139,3 @@ void Script::Render3d()
 }
 
 
-void Script::ShowText(char const *text)
-{
-	m_text2 = m_text1;
-	m_textEndTime2 = m_textEndTime1;
-	
-	m_text1 = text;
-	m_textEndTime1 = g_gameTime + TEXT_DISPLAY_TIME;
-}

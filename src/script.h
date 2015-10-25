@@ -2,6 +2,11 @@
 #define INCLUDED_SCRIPT_H
 
 
+// This script module implements the behaviour of a level in the game. It loads
+// a script .txt file and executes the commands from it one at a time. When the
+// end of the script is reached, the level is complete.
+
+
 #include "lib/containers/list.h"
 #include "lib/lite_string.h"
 #include "lib/vector2.h"
@@ -40,18 +45,10 @@ public:
 	
 	float m_waitEndTime;
 	
-	float m_textEndTime1;
-	float m_textEndTime2;
-	LiteString m_text1;
-	LiteString m_text2;
-
 	Script(char const *filename);
 
 	void Advance();
-	void Render2d();
 	void Render3d();
-
-	void ShowText(char const *text);
 };
 
 

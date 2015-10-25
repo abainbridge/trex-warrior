@@ -2,16 +2,20 @@
 #include "level.h"
 
 #include "lib/gfx/shape.h"
+#include "lib/sound/sound_system.h"
 #include "lib/resource.h"
 
 #include "arena.h"
 #include "building.h"
+#include "hud_text.h"
 #include "jump_pad.h"
 #include "navigation.h"
 #include "particle_system.h"
 #include "script.h"
+#include "ship_launcher.h"
 #include "ship_player.h"
 #include "ship_speedy.h"
+#include "ship_wasp.h"
 
 
 Level *g_level = NULL;
@@ -94,6 +98,34 @@ void Level::DeleteObj(GameObj *obj)
 	int idx = m_objectsToDelete.FindData(obj);
 	if (idx < 0)
 		m_objectsToDelete.PushBack(obj);
+}
+
+
+void Level::SpawnEnemy(int objType, Vector3 const *pos)
+{
+    Ship *s = NULL;
+    switch (objType)
+    {
+    case GameObj::ObjTypeSpeedy:
+        s = new Speedy(*pos);
+        break;
+    case GameObj::ObjTypeWasp:
+        s = new Wasp(*pos);
+        break;
+    case GameObj::ObjTypeLauncher:
+        s = new Launcher(*pos);
+        break;
+    default:
+        DebugAssert(0);
+    }
+    g_level->AddObj(s);
+    g_soundSystem->PlayWave("enemy_appears.wav", &s->m_pos);
+
+    LiteString text = "DROID APPEARS! TYPE ";
+    text += s->GetName();
+    text += ".";
+    text.ToUpper();
+    g_hudText.ShowText(text.m_str);
 }
 
 

@@ -17,6 +17,7 @@
 #include "app.h"
 #include "camera.h"
 #include "editor.h"
+#include "hud_text.h"
 #include "level.h"
 #include "radar.h"
 #include "renderer.h"
@@ -307,7 +308,7 @@ void Renderer::RenderFrame()
 
     g_gameFont.BeginText2d();
 
-	g_level->m_script->Render2d();
+	g_hudText.Render();
 
 	// Render cross hair
 	if (g_app->m_camera->GetMode() == Camera::ModePlayerShip)

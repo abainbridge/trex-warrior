@@ -11,6 +11,7 @@ class NavRoute;
 class Script;
 class ShipPlayer;
 class Shape;
+class Vector3;
 
 
 class Level
@@ -34,6 +35,8 @@ public:
 
 	void AddObj(GameObj *obj) { m_objects.PushBack(obj); }
 	void DeleteObj(GameObj *obj);
+
+    void SpawnEnemy(int objType, Vector3 const *pos);
 
 	bool AreEnemiesAlive();	// Returns true if there are currently any enemies alive
 };
