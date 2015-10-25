@@ -83,7 +83,7 @@ SoundSystem::SoundSystem()
 	for (int i = 128; i < 256; i++)
 		m_triangleLut[i] = 32767 + (128 - i) * (65535 / 128);
 
-	m_numSynthChannels = 2;
+	m_numSynthChannels = 1;
 	m_synthChannels = new SoundChannelSynth[m_numSynthChannels];
 
     m_numWaveChannels = 4;
