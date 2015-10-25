@@ -7,22 +7,6 @@
 
 
 // ****************************************************************************
-// ParticleType
-// ****************************************************************************
-
-class ParticleType
-{
-public:
-	float m_fadeInTime;
-	float m_fadeOutTime;
-	float m_life;
-	float m_size;
-	float m_friction;		// Amount of friction to apply (0=none 1=a huge amount)
-	float m_gravity;		// Amount of gravity to apply (0=none 1=quite a lot)
-};
-
-
-// ****************************************************************************
 // Particle
 // ****************************************************************************
 
@@ -32,12 +16,11 @@ public:
 	Vector3         m_pos;
 	Vector3         m_vel;
 	float           m_birthTime;
-    float           m_size;
     RgbaColour      m_colour;
 	
     void Initialise(Vector3 const &pos, Vector3 const &vel);
 	bool Advance();
-	void Render(float _predictionTime);
+	void Render(float predictionTime);
 };
 
 

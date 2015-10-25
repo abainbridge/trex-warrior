@@ -19,7 +19,7 @@ protected:
 	HashTable<int>				m_textures;
 	HashTable<Shape *>			m_shapes;
 	HashTable<SoundScript *>	m_soundScripts;
-    HashTable<SoundWave *>    m_soundSamples;
+    HashTable<SoundWave *>      m_soundSamples;
 
 public:
     Resource();
@@ -29,10 +29,10 @@ public:
 	int				GetDisplayList		(char const *name);	// Returns -1 if _name doesn't exist
 	void			DeleteDisplayList	(char const *name);	// Removes _name from the hashtable and calls glDeleteLists
 
-	int             GetTexture			(char const *name, bool mipMapping=true, bool masked=true);
+	int             GetTexture			(char const *name, bool masked=true);
 	Shape			*GetShape			(char const *name);
 	SoundScript     *GetSoundScript		(char const *name);
-    SoundWave     *GetSoundSample     (char const *name);
+    SoundWave       *GetSoundSample     (char const *name);
 
     void			FlushOpenGlState	();
 	void			RegenerateOpenGlState();

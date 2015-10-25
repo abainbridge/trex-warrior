@@ -69,7 +69,7 @@ void Resource::DeleteDisplayList(char const *name)
 }
 
 
-int Resource::GetTexture(char const *name, bool mipMapping, bool masked)
+int Resource::GetTexture(char const *name, bool masked)
 {
 	// First lookup this name in the existing textures
 	int theTexture = m_textures.GetData(name, -1);
@@ -86,7 +86,7 @@ int Resource::GetTexture(char const *name, bool mipMapping, bool masked)
 
 		if (masked) 
 			bmp.ConvertPinkToTransparent();
-		theTexture = bmp.ConvertToTexture(mipMapping);
+		theTexture = bmp.ConvertToTexture(true);
 		m_textures.PushBack(name, theTexture);
 	}
 
