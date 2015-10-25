@@ -122,7 +122,7 @@ void ShipPlayer::Advance()
 				m_pos += m_wackVel * 0.1f;
 				m_speed = 0.0f;
 
-                g_soundSystem->PlaySynth("player_collide.wav", &m_pos);
+                g_soundSystem->PlayWave("player_collide.wav", &m_pos);
 			}
 		}
 	}
