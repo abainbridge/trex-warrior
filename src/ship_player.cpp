@@ -15,7 +15,7 @@ ShipPlayer::ShipPlayer(Vector3 const &pos)
 	m_laserTemp = 0.0f;
 	m_maxSpeed = PLAYER_SHIP_MAX_MAX_SPEED / 2.0f;
 	m_shields = PLAYER_SHIP_MAX_SHIELDS;
-	m_wackVel = g_zeroVector;
+	m_whackVel = g_zeroVector;
 	m_rotateVel = 0.0f;
 }
 
@@ -66,11 +66,11 @@ void ShipPlayer::Advance()
 
 	float amountVFriction = g_advanceTime * 0.5f;
 	float amountHFriction = g_advanceTime * 3.5f;
-	m_wackVel.x *= 1.0f - amountHFriction;
-	m_wackVel.y *= 1.0f - amountVFriction;
-	m_wackVel.z *= 1.0f - amountHFriction;
+	m_whackVel.x *= 1.0f - amountHFriction;
+	m_whackVel.y *= 1.0f - amountVFriction;
+	m_whackVel.z *= 1.0f - amountHFriction;
 
-	m_pos += m_wackVel * g_advanceTime;
+	m_pos += m_whackVel * g_advanceTime;
 	m_pos += m_front * m_speed * g_advanceTime;
 
 	if (m_pos.y < PLAYER_SHIP_HOVER_HEIGHT)
@@ -90,12 +90,12 @@ void ShipPlayer::Advance()
 	
 		if (onJumpPad)
         {
-			m_wackVel.y = 85.0f;
+			m_whackVel.y = 85.0f;
             g_soundSystem->PlayWave("jump_pad.wav", &m_pos);
         }
 		else
         {
-			m_wackVel.y *= -0.5f;
+			m_whackVel.y *= -0.5f;
         }
 
 		m_pos.y = PLAYER_SHIP_HOVER_HEIGHT;
@@ -113,8 +113,9 @@ void ShipPlayer::Advance()
 			{
 				Vector3 fromCentre = m_pos - o->m_pos;
 				fromCentre.Normalize();
-				m_wackVel = fromCentre * (m_speed * -0.4f);
-				m_pos += m_wackVel * 0.1f;
+                float whackHardness = fabsf(m_speed) + 10.0f;
+				m_whackVel = fromCentre * whackHardness * -0.4f;
+				m_pos += m_whackVel * 0.1f;
 				m_speed = 0.0f;
 			}
 		}
@@ -125,8 +126,9 @@ void ShipPlayer::Advance()
 			{
 				Vector3 fromCentre = m_pos - o->m_pos;
 				fromCentre.Normalize();
-				m_wackVel = fromCentre * (m_speed * 0.6f);
-				m_pos += m_wackVel * 0.1f;
+                float whackHardness = fabsf(m_speed) + 10.0f;
+				m_whackVel = fromCentre * whackHardness * 0.6f;
+				m_pos += m_whackVel * 0.1f;
 				m_speed = 0.0f;
 
                 g_soundSystem->PlayWave("player_collide.wav", &m_pos);
@@ -135,7 +137,7 @@ void ShipPlayer::Advance()
 	}
 
 	// Gravity
-	m_wackVel.y -= g_advanceTime * 9.81 * 8.0f;
+	m_whackVel.y -= g_advanceTime * 9.81 * 8.0f;
 
 	m_laserTemp -= 0.08 * g_advanceTime;
 	if (m_laserTemp < 0.0f)

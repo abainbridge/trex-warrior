@@ -16,7 +16,7 @@ class ShipPlayer: public Ship
 public:
 	float m_laserTemp;
 	float m_maxSpeed;
-	Vector3 m_wackVel;	// Velocity caused do to the impulse of a collision or by a JumpPad
+	Vector3 m_whackVel;	// Velocity caused do to the impulse of a collision or by a JumpPad
 	float m_rotateVel;	// Velocity of the ships rotation (around the vertical axis)
 
 public:
