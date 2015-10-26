@@ -67,7 +67,10 @@ bool Particle::Advance()
     if (m_pos.y < groundHeight)
     {
         m_pos.y = groundHeight;
-		m_vel.y = -m_vel.y * 0.5f;
+		if (fabs(m_vel.y) > 80.0f)
+            m_vel.y = -m_vel.y * 0.6f;
+        else
+            m_vel.y = -m_vel.y * 0.8f;
     }        
 	else if (m_pos.y > groundHeight)
 	{
