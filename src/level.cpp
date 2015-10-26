@@ -90,6 +90,8 @@ void Level::Render()
 
 	g_particleSystem.Render();
 	g_level->m_script->Render3d();
+
+    Sleep(10);
 }
 
 

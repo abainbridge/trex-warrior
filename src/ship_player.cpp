@@ -49,9 +49,15 @@ void ShipPlayer::Advance()
 		m_laserTemp += 0.08;
 	}
 
-	float temp = 1.0f - (g_advanceTime * 3.5f);
-	m_rotateVel *= temp;	// Rotational friction
-	m_rotateVel += g_inputManager->m_mouseVelX * g_advanceTime * -0.04f;
+    {
+        float advanceTime = g_advanceTime;
+        if (g_advanceTime > 0.05f)
+            advanceTime = 0.05f;
+
+        float frictionFactor = 1.0f - (g_advanceTime * 5.5f);
+        m_rotateVel *= frictionFactor;
+	    m_rotateVel += g_inputManager->m_mouseVelX * advanceTime * -0.04f;
+    }
 	m_front.RotateAroundY(m_rotateVel);
 
 	
