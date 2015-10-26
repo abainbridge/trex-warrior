@@ -4,6 +4,7 @@
 #include "lib/gfx/debug_render.h"
 #include "lib/gfx/simple_primitives.h"
 #include "lib/gfx/shape.h"
+#include "lib/sound/sound_system.h"
 #include "lib/hi_res_time.h"
 #include "lib/resource.h"
 #include "arena.h"
@@ -92,10 +93,13 @@ void Missile::Render()
 }
 
 
-void Missile::Hit(float force)
+void Missile::TakeHit(float force)
 {
 	m_shields -= force;
 
 	if (m_shields <= 0)
+    {
 		g_level->DeleteObj(this);
+        g_soundSystem->PlayWave("missile_destroyed.wav", &m_pos);
+    }
 }

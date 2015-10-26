@@ -21,7 +21,7 @@ public:
 
     virtual RgbaColour GetRadarColour() { return RgbaColour(255, 255, 255); }
 
-	void Hit(float force);
+	void TakeHit(float force);
 };
 
 

@@ -1,6 +1,7 @@
 #include "lib/universal_include.h"
 #include "ship_speedy.h"
 
+#include "lib/sound/sound_system.h"
 #include "lib/hi_res_time.h"
 #include "lib/resource.h"
 #include "app.h"
@@ -62,6 +63,7 @@ void Speedy::Advance()
 		{
 			m_nextFireTime += 0.9f;
 			g_level->AddObj(new Bullet(this, m_pos, m_front));
+            g_soundSystem->PlayWave("enemy_shoot.wav", &m_pos);
 		}
 	}
 }

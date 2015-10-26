@@ -43,6 +43,7 @@ void ShipPlayer::Advance()
 		Vector3 pos = m_pos + m_front * 10.0f;
 		pos.y += 2.0f;
 		Bullet *bul = new Bullet(this, pos, m_front);
+        g_soundSystem->PlayWave("player_shoot.wav", &pos);
 		g_level->AddObj(bul);
 
 		m_laserTemp += 0.08;

@@ -4,7 +4,6 @@
 #include "lib/gfx/debug_render.h"
 #include "lib/gfx/simple_primitives.h"
 #include "lib/gfx/shape.h"
-#include "lib/sound/sound_system.h"
 #include "lib/hi_res_time.h"
 #include "lib/resource.h"
 #include "app.h"
@@ -19,7 +18,6 @@ Bullet::Bullet(GameObj *owner, Vector3 const &pos, Vector3 const &front)
 {
 	m_owner = owner;
 	m_vel = front * 1000.0f;
-    g_soundSystem->PlayWave("player_shoot.wav", &pos);
 }
 
 

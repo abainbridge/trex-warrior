@@ -28,7 +28,7 @@ unsigned short SoundChannelBase::GetVolume(Vector3 const *listenerPos)
     if (m_usePos)
     {
         float distFromListenerSqrd = (*listenerPos - m_pos).Len();
-        float vol = 50.0f / distFromListenerSqrd;
+        float vol = 150.0f / distFromListenerSqrd;
         if (vol < 1.0f)
             channelVol *= vol;
     }
@@ -146,11 +146,12 @@ void SoundSystem::DeviceCallback(StereoSample *buf, unsigned int numSamples)
     for (int j = 0; j < m_numWaveChannels; j++)
     {
         SoundChannelWave *chan = &m_waveChannels[j];
-        unsigned short channelVol = chan->GetVolume(&m_listenerPos);
-        int mixerBufOffset = 0;
 
         if (chan->m_active)
         {
+            unsigned short channelVol = chan->GetVolume(&m_listenerPos);
+            int mixerBufOffset = 0;
+
             // Add samples from this wave to the mix buffer
             for (int i = 0; i < numSamples; i++)
             {
