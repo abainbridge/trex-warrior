@@ -23,6 +23,7 @@ public:
     bool m_active;
     Vector3 m_pos;
     bool m_usePos;
+    double m_startTime;
 
     SoundChannelBase();
 
@@ -54,6 +55,7 @@ class SoundSystem
 {
 private:
     Vector3 m_listenerPos;
+    int GetFreeWaveChannel();
 
 public:
     SoundChannelSynth *m_synthChannels;

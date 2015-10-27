@@ -4,6 +4,7 @@
 #include "lib/sound/sound_device.h"
 #include "lib/sound/sound_generator.h"
 #include "lib/sound/sound_wave.h"
+#include "lib/hi_res_time.h"
 #include "lib/resource.h"
 
 
@@ -68,6 +69,35 @@ SoundChannelWave::SoundChannelWave()
 static void SoundCallback(StereoSample *buf, unsigned int numSamples)
 {
 	g_soundSystem->DeviceCallback(buf, numSamples);
+}
+
+
+int SoundSystem::GetFreeWaveChannel()
+{
+    int freeChannelIndex = -1;
+    for (int i = 0; i < m_numWaveChannels; i++)
+    {
+        if (!m_waveChannels[i].m_active)
+        {
+            freeChannelIndex = i;
+            break;
+        }
+    }
+
+    if (freeChannelIndex < 0)
+    {
+        double oldestStartTime = g_gameTime;
+        for (int i = 0; i < m_numWaveChannels; i++)
+        {
+            if (m_waveChannels[i].m_startTime < oldestStartTime)
+            {
+                oldestStartTime = m_waveChannels[i].m_startTime;
+                freeChannelIndex = i;
+            }
+        }
+    }
+
+    return freeChannelIndex;
 }
 
 
@@ -224,20 +254,13 @@ void SoundSystem::PlayWave(char const *filename, Vector3 const *pos)
         return;
     }
 
-    int freeChannelIndex = 0;
-    for (int i = 0; i < m_numWaveChannels; i++)
-    {
-        if (!m_waveChannels[i].m_active)
-        {
-            freeChannelIndex = i;
-            break;
-        }
-    }
+    int freeChannelIndex = GetFreeWaveChannel();
 
     SoundChannelWave *channel = &m_waveChannels[freeChannelIndex];
     channel->m_active = true;
     channel->m_wave = soundWave;
     channel->m_index = 0.0f;
+    channel->m_startTime = g_gameTime;
     if (pos)
     {
         channel->m_pos = *pos;
