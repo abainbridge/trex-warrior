@@ -8,6 +8,7 @@
 #include "lib/hi_res_time.h"
 #include "lib/resource.h"
 #include "arena.h"
+#include "big_explosions.h"
 #include "camera.h"
 #include "ship.h"
 #include "level.h"
@@ -99,7 +100,8 @@ void Missile::TakeHit(float force)
 
 	if (m_shields <= 0)
     {
-		g_level->DeleteObj(this);
         g_soundSystem->PlayWave("missile_destroyed.wav", &m_pos);
+        g_level->AddObj(new MissileDeath(m_pos));
+        g_level->DeleteObj(this);
     }
 }

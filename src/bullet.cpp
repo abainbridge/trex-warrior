@@ -74,6 +74,7 @@ void Bullet::Render()
     if (m_owner == (GameObj*)g_level->m_playerShip)
         col.g = col.b = 0;
 
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 	Render3dSprite(g_app->m_camera->m_up, g_app->m_camera->GetRight(), m_pos,
 				   BULLET_SIZE, BULLET_SIZE, tid, col);
 }

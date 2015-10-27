@@ -1,6 +1,7 @@
 #include "lib/universal_include.h"
 #include "simple_primitives.h"
 
+#include "lib/gfx/opengl_helper.h"
 #include "lib/gfx/rgb_colour.h"
 #include "lib/vector3.h"
 
@@ -17,15 +18,13 @@ void Render3dSprite(Vector3 const &camUp, Vector3 const &camRight,
 	Vector3 topLeft(pos - right + up);
 	Vector3 topRight(pos + right + up);
 
-	glDisable(GL_LIGHTING);
-	glEnable(GL_TEXTURE_2D);
+	GlHelperDisable(GL_LIGHTING);
+	GlHelperEnable(GL_TEXTURE_2D);
+    GlHelperDisable(GL_CULL_FACE);
 	glDepthMask(false);
-
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    GlHelperEnable(GL_BLEND);
 
 	glColor4ubv(col.GetData());
-	glDisable(GL_CULL_FACE);
 	glBindTexture(GL_TEXTURE_2D, textureId);
 	glBegin(GL_QUADS);
 		glTexCoord2f(1, 1);
@@ -38,10 +37,5 @@ void Render3dSprite(Vector3 const &camUp, Vector3 const &camRight,
 		glVertex3fv(bottomLeft.GetData());
 	glEnd();
 
- 	glDisable(GL_BLEND);
-	glDepthMask(true);
-
-	glDisable(GL_TEXTURE_2D);
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_LIGHTING);
+    glDepthMask(true);
 }

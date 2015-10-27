@@ -31,11 +31,11 @@ public:
 	Shape *m_shape;
 
 public:
-    GameObj(int type, Vector3 pos) 
+    GameObj(int type, Vector3 const &pos) 
 	{ 
 		m_type = type; 
 		m_pos = pos;
-		m_front = Vector3(1, 0, 0);
+		m_front.Set(1, 0, 0);
 		m_shape = NULL;
 	}
 
