@@ -70,6 +70,10 @@ void Bullet::Advance()
 void Bullet::Render()
 {
 	int tid = g_resourceManager.GetTexture("bullet.bmp");
+    RgbaColour col = RgbaColour(255,50,80,255);
+    if (m_owner == (GameObj*)g_level->m_playerShip)
+        col.g = col.b = 0;
+
 	Render3dSprite(g_app->m_camera->m_up, g_app->m_camera->GetRight(), m_pos,
-				   BULLET_SIZE, BULLET_SIZE, tid, RgbaColour(255,0,0,255));
+				   BULLET_SIZE, BULLET_SIZE, tid, col);
 }
