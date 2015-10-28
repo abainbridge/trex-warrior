@@ -13,6 +13,9 @@ private:
 	float	m_fadeDelay;			// Amount of time left to wait before starting fade
 
 private:
+    void    CreateWin(bool windowed);
+    void    DestroyWin();
+
 	void	RenderBackground();
 	void	RenderDash();
 
@@ -22,7 +25,6 @@ private:
 	
 public:
 	Renderer				();
-    ~Renderer               ();
 
 	void	Render			();
     void	FpsMeterAdvance	();
@@ -35,6 +37,8 @@ public:
 
 	void	StartFadeOut();
 	void	StartFadeIn(float delay);
+
+    void    ToggleFullscreen();
 };
 
 #endif

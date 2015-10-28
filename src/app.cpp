@@ -86,6 +86,12 @@ void App::PlayLocationLoop()
 {
 	while (m_requestedState == StatePlayLocation)
 	{
+        if (g_keyDeltas[KEY_ENTER] && g_keys[KEY_ALT])
+        {
+            g_app->m_renderer->ToggleFullscreen();
+            g_inputManager = new InputManager;
+        }
+
 		MainLoopCommonStart();
 
 		if (g_inputManager->m_windowHasFocus)

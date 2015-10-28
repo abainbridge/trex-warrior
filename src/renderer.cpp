@@ -37,17 +37,22 @@ Renderer::Renderer()
 	m_fadeRate = 0.0f;
 	m_fadeDelay = 0.0f;
 
-	int targetScreenW = g_prefsManager.GetInt("ScreenWidth");
-	int targetScreenH = g_prefsManager.GetInt("ScreenHeight");
-	bool windowed = g_prefsManager.GetInt("Windowed") ? true : false;
-    
-    bool success = g_windowManager->CreateWin(targetScreenW, targetScreenH, windowed, "Trex Warrior");
+    bool windowed = g_prefsManager.GetInt("Windowed") ? true : false;
+    CreateWin(windowed);
+}
 
+
+void Renderer::CreateWin(bool windowed)
+{
+    int targetScreenW = g_prefsManager.GetInt("ScreenWidth");
+    int targetScreenH = g_prefsManager.GetInt("ScreenHeight");
+
+    bool success = g_windowManager->CreateWin(targetScreenW, targetScreenH, windowed, "Trex Warrior");
     ReleaseAssert(success, "Failed to set screen mode" );
 }
 
 
-Renderer::~Renderer()
+void Renderer::DestroyWin()
 {
     g_windowManager->DestroyWin();
 }
@@ -511,4 +516,15 @@ void Renderer::UnsetObjectLighting() const
 	glDisable(GL_LIGHTING);
 	glDisable(GL_LIGHT0);
 	glDisable(GL_LIGHT1);
+}
+
+
+void Renderer::ToggleFullscreen()
+{
+    bool wasWindowed = g_windowManager->IsWindowed();
+    g_windowManager->DestroyWin();
+    CreateWin(!wasWindowed);
+
+    g_resourceManager.RegenerateOpenGlState();
+    ReleaseAssert(g_gameFont.Initialize("data/bitmaps/font.bmp"), "Couldn't load game font");
 }

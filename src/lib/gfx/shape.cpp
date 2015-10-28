@@ -90,7 +90,7 @@ Shape::~Shape()
 
 void Shape::BuildDisplayList()
 {
-	DebugAssert(m_displayListName == NULL);
+	delete [] m_displayListName;
 	m_displayListName = g_resourceManager.GenerateName();
 	int id = g_resourceManager.CreateDisplayList(m_displayListName);
 	glNewList(id, GL_COMPILE);

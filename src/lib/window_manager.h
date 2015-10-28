@@ -24,6 +24,7 @@ public:
 
 	int ScreenW() { return m_screenW; }
 	int ScreenH() { return m_screenH; }
+    bool IsWindowed() { return m_windowed; }
 
 	bool CreateWin(int width, int height, bool windowed, char const *appName);
 	void DestroyWin();
