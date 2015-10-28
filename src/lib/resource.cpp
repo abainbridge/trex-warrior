@@ -188,6 +188,8 @@ void Resource::RegenerateOpenGlState()
 
 		m_shapes[i]->BuildDisplayList();
 	}
+
+    m_textures.Empty();
 }
 
 
