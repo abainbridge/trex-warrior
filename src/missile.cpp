@@ -16,7 +16,7 @@
 
 #define MISSILE_HOVER_HEIGHT 8.0f
 #define MISSILE_SPEED 160.0f
-#define MISSILE_TURN_SPEED 0.003f
+#define MISSILE_TURN_SPEED 0.0043f
 
 
 Missile::Missile(GameObj *owner, GameObj *target, Vector3 const &pos, Vector3 const &front)
@@ -76,8 +76,12 @@ void Missile::Advance()
 			if (o->m_shape->SphereHit(&sp, osMat, true))
 			{
 				// Missile has hit something, destroy the missile
-				g_level->DeleteObj(this);
+				if (o->m_type == ObjTypePlayerShip)
+                    g_level->DeleteObj(this);
+                else
+                    TakeHit(m_shields + 1.0f);
 
+                // Give damage to whatever we hit
 				o->TakeHit(4.0f);
 
 				return;	// This missile is dead now. No need to do the rest of the time slices.
