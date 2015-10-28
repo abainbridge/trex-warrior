@@ -15,8 +15,8 @@
 
 
 #define MISSILE_HOVER_HEIGHT 8.0f
-#define MISSILE_SPEED 150.0f
-#define MISSILE_TURN_SPEED 0.0036f
+#define MISSILE_SPEED 160.0f
+#define MISSILE_TURN_SPEED 0.003f
 
 
 Missile::Missile(GameObj *owner, GameObj *target, Vector3 const &pos, Vector3 const &front)
