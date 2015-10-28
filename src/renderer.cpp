@@ -25,21 +25,31 @@
 #include "ship_player.h"
 
 
+float const FAR_PLANE = 1500.0f;
+float const NEAR_PLANE = 0.5f;
+
+
 Renderer::Renderer()
 {
     m_fps = 60;
-	m_nearPlane = 0.5f;
-	m_farPlane = 1500.0f;
-	m_fadedness = 0.0f;
+
+    m_fadedness = 0.0f;
 	m_fadeRate = 0.0f;
 	m_fadeDelay = 0.0f;
 
-	m_screenW = g_prefsManager.GetInt("ScreenWidth");
-	m_screenH = g_prefsManager.GetInt("ScreenHeight");
+	int targetScreenW = g_prefsManager.GetInt("ScreenWidth");
+	int targetScreenH = g_prefsManager.GetInt("ScreenHeight");
 	bool windowed = g_prefsManager.GetInt("Windowed") ? true : false;
     
-    bool success = g_windowManager->CreateWin(m_screenW, m_screenH, windowed, "Trex Warrior");
+    bool success = g_windowManager->CreateWin(targetScreenW, targetScreenH, windowed, "Trex Warrior");
+
     ReleaseAssert(success, "Failed to set screen mode" );
+}
+
+
+Renderer::~Renderer()
+{
+    g_windowManager->DestroyWin();
 }
 
 
@@ -57,11 +67,13 @@ void Renderer::RenderBackground()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
+    int screenW = g_windowManager->ScreenW();
+    int screenH = g_windowManager->ScreenH();
 	glBegin(GL_QUADS);
 	glTexCoord2f(0.95f, 1.0f);	glVertex2f(0, 0);
-	glTexCoord2f(0.96f, 1.0f);	glVertex2f(m_screenW, 0);
-	glTexCoord2f(0.96f, 0.61f);	glVertex2f(m_screenW, m_screenH * 0.67f);
-	glTexCoord2f(0.95f, 0.61f);	glVertex2f(0, m_screenH * 0.67f);
+	glTexCoord2f(0.96f, 1.0f);	glVertex2f(screenW, 0);
+	glTexCoord2f(0.96f, 0.61f);	glVertex2f(screenW, screenH * 0.67f);
+	glTexCoord2f(0.95f, 0.61f);	glVertex2f(0, screenH * 0.67f);
 	glEnd();
 
 	glDisable(GL_TEXTURE_2D);
@@ -72,7 +84,10 @@ void Renderer::RenderBackground()
 
 void Renderer::RenderDash()
 {
-	glColor3ubv(g_colourWhite.GetData());
+    int screenW = g_windowManager->ScreenW();
+    int screenH = g_windowManager->ScreenH();
+
+    glColor3ubv(g_colourWhite.GetData());
 	glEnable(GL_TEXTURE_2D);
 	int textureId = g_resourceManager.GetTexture("dash.bmp");
     if (textureId == -1)
@@ -95,10 +110,10 @@ void Renderer::RenderDash()
 		// Draw laser temp bar
 		{
 			float deltaX = 0.971f - 0.800f;
-			int x1 = m_screenW * 0.800f;
-			int x2 = x1 + m_screenW * deltaX * g_level->m_playerShip->m_laserTemp;
-			int y1 = m_screenH * 0.82f;
-			int y2 = m_screenH * 0.85f;
+			int x1 = screenW * 0.800f;
+			int x2 = x1 + screenW * deltaX * g_level->m_playerShip->m_laserTemp;
+			int y1 = screenH * 0.82f;
+			int y2 = screenH * 0.85f;
 			glBegin(GL_QUADS);
 			glTexCoord2f(u1, v1); glVertex2i(x1, y1);
 			glTexCoord2f(u2, v2); glVertex2i(x2, y1);
@@ -113,10 +128,10 @@ void Renderer::RenderDash()
 			float shields = g_level->m_playerShip->m_shields / PLAYER_SHIP_MAX_SHIELDS;
 			if (shields < 0.0f)
 				shields = 0.0f;
-			int x1 = m_screenW * 0.811f;
-			int x2 = x1 + m_screenW * deltaX * shields;
-			int y1 = m_screenH * 0.88f;
-			int y2 = m_screenH * 0.91f;
+			int x1 = screenW * 0.811f;
+			int x2 = x1 + screenW * deltaX * shields;
+			int y1 = screenH * 0.88f;
+			int y2 = screenH * 0.91f;
 			glBegin(GL_QUADS);
 			glTexCoord2f(u1, v1); glVertex2i(x1, y1);
 			glTexCoord2f(u2, v2); glVertex2i(x2, y1);
@@ -131,10 +146,10 @@ void Renderer::RenderDash()
 			float speed = g_level->m_playerShip->m_speed / PLAYER_SHIP_MAX_MAX_SPEED;
 			if (speed < 0.0f)
 				speed = 0.0f;
-			int x1 = m_screenW * 0.832f;
-			int x2 = x1 + m_screenW * deltaX * speed;
-			int y1 = m_screenH * 0.96f;
-			int y2 = m_screenH * 0.99f;
+			int x1 = screenW * 0.832f;
+			int x2 = x1 + screenW * deltaX * speed;
+			int y1 = screenH * 0.96f;
+			int y2 = screenH * 0.99f;
 			glBegin(GL_QUADS);
 			glTexCoord2f(u1, v1); glVertex2i(x1, y1);
 			glTexCoord2f(u2, v2); glVertex2i(x2, y1);
@@ -147,9 +162,9 @@ void Renderer::RenderDash()
 	// Draw the dash bitmap
 	glBegin(GL_QUADS);
 	glTexCoord2f(0.0f,   1.0f);	glVertex2f(0, 0);
-	glTexCoord2f(0.625f, 1.0f);	glVertex2f(m_screenW, 0);
-	glTexCoord2f(0.625f, 0.61f);glVertex2f(m_screenW, m_screenH);
-	glTexCoord2f(0.0f,   0.61f);glVertex2f(0, m_screenH);
+	glTexCoord2f(0.625f, 1.0f);	glVertex2f(screenW, 0);
+	glTexCoord2f(0.625f, 0.61f);glVertex2f(screenW, screenH);
+	glTexCoord2f(0.0f,   0.61f);glVertex2f(0, screenH);
 	glEnd();
 
 	glDisable(GL_TEXTURE_2D);
@@ -245,12 +260,14 @@ void Renderer::RenderFadeOut()
 		glDisable(GL_DEPTH_TEST);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		
+        int screenW = g_windowManager->ScreenW();
+        int screenH = g_windowManager->ScreenH();
 		glColor4ub(0, 0, 0, (int)(m_fadedness * 255.0f)); 
 		glBegin(GL_QUADS);
 			glVertex2i(0, 0);
-			glVertex2i(m_screenW, 0);
-			glVertex2i(m_screenW, m_screenH);
-			glVertex2i(0, m_screenH);
+			glVertex2i(screenW, 0);
+			glVertex2i(screenW, screenH);
+			glVertex2i(0, screenH);
 		glEnd();
 		
 		glDisable(GL_BLEND);
@@ -293,7 +310,9 @@ void Renderer::RenderFrame()
     
 	if (g_app->m_camera->GetMode() == Camera::ModePlayerShip)
 	{
-		glScissor(0, m_screenH * 0.22f, m_screenW, m_screenH);
+        int screenW = g_windowManager->ScreenW();
+        int screenH = g_windowManager->ScreenH();
+		glScissor(0, screenH * 0.22f, screenW, screenH);
 		glEnable(GL_SCISSOR_TEST);
 	}
 	g_app->m_level->Render();
@@ -313,8 +332,8 @@ void Renderer::RenderFrame()
 	// Render cross hair
 	if (g_app->m_camera->GetMode() == Camera::ModePlayerShip)
 	{
-		int x = m_screenW / 2;
-		int y = m_screenH / 2;
+		int x = g_windowManager->ScreenW() / 2;
+		int y = g_windowManager->ScreenH() / 2;
 
 		//       ||
 		//       ||
@@ -371,11 +390,13 @@ void Renderer::RenderFrame()
 
 void Renderer::SetupFor3D() const
 {
+    float screenW = g_windowManager->ScreenW();
+    float screenH = g_windowManager->ScreenH();
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(g_app->m_camera->m_fov,
-		(float)m_screenW / (float)m_screenH, // Aspect ratio
-		m_nearPlane, m_farPlane);
+		screenW / screenH, // Aspect ratio
+		NEAR_PLANE, FAR_PLANE);
 
 	g_app->m_camera->SetupModelviewMatrix();
 

@@ -8,11 +8,6 @@ public:
     int     m_fps;
 
 private:
-    float   m_nearPlane;
-    float   m_farPlane;
-	int		m_screenW;
-	int		m_screenH;
-
 	float	m_fadedness;			// 1.0 means black screen. 0.0 means not fade out at all.
 	float	m_fadeRate;				// +ve means fading out, -ve means fading in
 	float	m_fadeDelay;			// Amount of time left to wait before starting fade
@@ -27,6 +22,7 @@ private:
 	
 public:
 	Renderer				();
+    ~Renderer               ();
 
 	void	Render			();
     void	FpsMeterAdvance	();
