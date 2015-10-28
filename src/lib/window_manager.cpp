@@ -94,11 +94,9 @@ void WindowManager::UnclipCursor()
 }
 
 
-bool WindowManager::CreateWin(int _width, int _height, bool _windowed, char const *_appName)
+bool WindowManager::CreateWin(int width, int height, bool windowed, char const *appName)
 {
-	m_screenW = _width;
-	m_screenH = _height;
-    m_windowed = _windowed;
+    m_windowed = windowed;
 
 	// Register window class
 	WNDCLASS wc;
@@ -111,24 +109,23 @@ bool WindowManager::CreateWin(int _width, int _height, bool _windowed, char cons
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
 	wc.lpszMenuName = NULL;
-	wc.lpszClassName = _appName;
+	wc.lpszClassName = appName;
 	RegisterClass(&wc);
 
-	const int colourDepth = 32;
-	const int zDepth = 24;
-
 	int posX, posY;
-	unsigned int windowStyle = WS_POPUPWINDOW | WS_VISIBLE;
+	unsigned int windowStyle = WS_POPUP | WS_VISIBLE;
 
-	if (_windowed)
+	if (windowed)
 	{
-        windowStyle |= WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
-		RECT windowRect = { 0, 0, _width, _height };
+        m_screenW = width;
+        m_screenH = height;
+        windowStyle |= WS_POPUPWINDOW | WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
+		RECT windowRect = { 0, 0, width, height };
 		AdjustWindowRect(&windowRect, windowStyle, false);
-		int borderWidth = ((windowRect.right - windowRect.left) - _width) / 2;
-		int titleHeight = ((windowRect.bottom - windowRect.top) - _height) - borderWidth * 2;
-		_width += borderWidth * 2;
-		_height += borderWidth * 2 + titleHeight;
+		int borderWidth = ((windowRect.right - windowRect.left) - width) / 2;
+		int titleHeight = ((windowRect.bottom - windowRect.top) - height) - borderWidth * 2;
+		width += borderWidth * 2;
+		height += borderWidth * 2 + titleHeight;
 
 		HWND desktopWindow = GetDesktopWindow();
 		RECT desktopRect;
@@ -136,27 +133,23 @@ bool WindowManager::CreateWin(int _width, int _height, bool _windowed, char cons
 		int desktopWidth = desktopRect.right - desktopRect.left;
 		int desktopHeight = desktopRect.bottom - desktopRect.top;
 
-		if (_width > desktopWidth || _height > desktopHeight)
-        {
+		if (width > desktopWidth || height > desktopHeight)
             return false;
-        }
 
-		posX = (desktopRect.right - _width) / 2;
-		posY = (desktopRect.bottom - _height) / 2;
+		posX = (desktopRect.right - width) / 2;
+		posY = (desktopRect.bottom - height) / 2;
 	}
 	else
 	{
-		DEVMODE devmode;
-		devmode.dmSize = sizeof(DEVMODE);
-		devmode.dmBitsPerPel = colourDepth;
-		devmode.dmPelsWidth = _width;
-		devmode.dmPelsHeight = _height;
-		devmode.dmDisplayFrequency = 60;
-		devmode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
-		long result = ChangeDisplaySettings(&devmode, CDS_FULLSCREEN);
-        if (result != DISP_CHANGE_SUCCESSFUL) return false;
-        
-        posX = 0;
+		HWND desktopWindow = GetDesktopWindow();
+		RECT desktopRect;
+		GetWindowRect(desktopWindow, &desktopRect);
+		m_screenW = desktopRect.right - desktopRect.left;
+		m_screenH = desktopRect.bottom - desktopRect.top;
+        width = m_screenW;
+        height = m_screenH;
+
+		posX = 0;
 		posY = 0;
 	}
 
@@ -164,7 +157,7 @@ bool WindowManager::CreateWin(int _width, int _height, bool _windowed, char cons
 	m_win32Specific->m_hWnd = CreateWindow(
 		wc.lpszClassName, wc.lpszClassName, 
 		windowStyle,
-		posX, posY, _width, _height,
+		posX, posY, width, height,
 		NULL, NULL, g_hInstance, NULL);
 
     if (!m_win32Specific->m_hWnd)
@@ -172,7 +165,7 @@ bool WindowManager::CreateWin(int _width, int _height, bool _windowed, char cons
 
 	ClipCursor();
 	HideMousePointer();
-	EnableOpenGL(colourDepth, zDepth);
+	EnableOpenGL(32, 24);
 
     return true;
 }
