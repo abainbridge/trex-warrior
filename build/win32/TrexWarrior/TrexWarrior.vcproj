@@ -1035,6 +1035,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\big_explosions.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\big_explosions.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\building.cpp"
 				>
 				<FileConfiguration
@@ -1117,11 +1125,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\missile.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\missle.cpp"
+				RelativePath="..\..\..\src\missile.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -1141,6 +1145,10 @@
 						PrecompiledHeaderThrough="lib/universal_include.h"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\src\missile.h"
+				>
 			</File>
 			<File
 				RelativePath="..\..\..\src\ship.cpp"
