@@ -16,7 +16,7 @@
 
 #define MISSILE_HOVER_HEIGHT 8.0f
 #define MISSILE_SPEED 160.0f
-#define MISSILE_TURN_SPEED 0.0043f
+#define MISSILE_TURN_SPEED 2.15f
 
 
 Missile::Missile(GameObj *owner, GameObj *target, Vector3 const &pos, Vector3 const &front)
@@ -46,7 +46,7 @@ void Missile::Advance()
 		m_front.y = 0.0f;
 		Vector3 crossProd = m_front.CrossProduct(toTarg);
 		if (crossProd.Len() > MISSILE_TURN_SPEED)
-			crossProd.SetLen(MISSILE_TURN_SPEED);
+			crossProd.SetLen(MISSILE_TURN_SPEED * advanceTime);
 		m_front.RotateAround(crossProd);
 		
 		// Steer towards the target in the vertical plane
