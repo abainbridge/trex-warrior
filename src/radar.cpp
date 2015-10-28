@@ -15,7 +15,7 @@ void RenderRadar()
 	int posY = sh * 0.87f;
 	float scaleX = 0.00022f * sh;
 	float scaleY = 0.00017f * sh;
-	float size = sw * 0.002;
+	int size = sw * 0.002;
 
 	Vector3 const &playerPos = g_level->m_playerShip->m_pos;
 	Vector3 const &playerFront = g_level->m_playerShip->m_front;
@@ -28,7 +28,10 @@ void RenderRadar()
 		GameObj *o = g_level->m_objects[i];
         
         RgbaColour col = o->GetRadarColour();
-        glColor3ub(col.r, col.g, col.b);
+        if (col == g_colourBlack)
+            continue;
+
+        glColor3ubv(col.GetData());
 
 		float x = o->m_pos.x - playerPos.x;
 		float y = o->m_pos.z - playerPos.z;
@@ -40,8 +43,8 @@ void RenderRadar()
 
 		float tx = x * a + y * b;
 		float ty = x * c + y * d;
-		x = -ty * scaleX;
-		y = -tx * scaleY;
+		x = floor(-ty * scaleX);
+		y = floor(-tx * scaleY);
 
 		x += posX;
 		y += posY;

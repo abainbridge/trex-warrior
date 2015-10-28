@@ -51,5 +51,5 @@ void MissileDeath::Render()
 
 RgbaColour MissileDeath::GetRadarColour()
 {
-    return RgbaColour(0, 0, 0, 0);
+    return g_colourBlack;
 }
