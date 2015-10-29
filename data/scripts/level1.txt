@@ -1,5 +1,5 @@
 text TIME FOR ORIENTATION: 4 SEC.
-wait 40
+wait 4
 text WELCOME! IT'S YOUR FIRST DAY.
 wait 2
 spawn speedy 0
