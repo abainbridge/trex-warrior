@@ -40,7 +40,7 @@ public:
 	}
 
 	virtual void Advance() {};
-    virtual void Render() = 0;
+    virtual void Render();
 
 	virtual char const *GetName() { DebugAssert(0); return "¬"; }
 	virtual void TakeHit(float force) {}

@@ -13,7 +13,6 @@ public:
     virtual RgbaColour GetRadarColour() { return RgbaColour(128, 128, 128); }
 
     void Advance();
-	void Render();
 };
 
 

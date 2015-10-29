@@ -17,7 +17,6 @@ public:
 	Missile(GameObj *owner, GameObj *target, Vector3 const &pos, Vector3 const &front);
 
 	void Advance();
-	void Render();
 
     virtual RgbaColour GetRadarColour() { return RgbaColour(255, 255, 255); }
 

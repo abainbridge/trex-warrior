@@ -1095,6 +1095,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\game_obj.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\game_obj.h"
 				>
 			</File>

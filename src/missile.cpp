@@ -92,13 +92,6 @@ void Missile::Advance()
 }
 
 
-void Missile::Render()
-{
-	Matrix34 mat(m_front, Vector3(0,1,0), m_pos);
-	m_shape->Render(0.0f, mat);
-}
-
-
 void Missile::TakeHit(float force)
 {
 	m_shields -= force;

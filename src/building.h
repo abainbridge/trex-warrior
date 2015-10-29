@@ -15,8 +15,6 @@ public:
 	Building(Vector3 pos, Vector3 front);
 
     virtual RgbaColour GetRadarColour() { return RgbaColour(0, 255, 0); }
-
-    void Render();
 };
 
 
