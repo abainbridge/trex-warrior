@@ -68,7 +68,10 @@ try:
         
         # Assume material name is actually rgb hex values
         try:
-            rgb = (int(l[0:2],16), int(l[2:4],16), int(l[4:6],16))
+            if len(l) == 7:
+                rgb = (int(l[0],16), int(l[1],16), int(l[2],16))
+            else:
+                rgb = (int(l[0:2],16), int(l[2:4],16), int(l[4:6],16))
         except:
             print "Material name is not a colour on line", lineNum
             print l
