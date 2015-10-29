@@ -30,16 +30,19 @@ Level::Level()
 	m_playerShip->m_front.Set(1,0,0);
 	m_objects.PushBack(m_playerShip);
 
-	Building *building = new Building(Vector3(-20, 0, 230), Vector3(0,0,1));
+	Building *building = new Building(Vector3(0, 0, 320), Vector3(0,0,1));
 	m_objects.PushBack(building);
 
-	building = new Building(Vector3(-20, 0, -140), Vector3(0,0,1));
-	m_objects.PushBack(building);
-	
-	building = new Building(Vector3(-110, 0, -250), Vector3(1,0,0));
+    building = new Building(Vector3(-10, 0, -230), Vector3(0,0,1));
+    m_objects.PushBack(building);
+
+    building = new Building(Vector3(10, 0, -230), Vector3(0,0,1));
+    m_objects.PushBack(building);
+
+	building = new Building(Vector3(-90, 0, -340), Vector3(1,0,0));
 	m_objects.PushBack(building);
 
-	building = new Building(Vector3(70, 0, -250), Vector3(1,0,0));
+	building = new Building(Vector3(90, 0, -340), Vector3(1,0,0));
 	m_objects.PushBack(building);
 
 	JumpPad *jumpPad = new JumpPad(Vector3(0, 0, 0));
@@ -90,8 +93,6 @@ void Level::Render()
 
 	g_particleSystem.Render();
 	g_level->m_script->Render3d();
-
-    Sleep(10);
 }
 
 

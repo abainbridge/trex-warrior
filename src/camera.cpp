@@ -76,7 +76,7 @@ void Camera::AdvancePlayerShipMode()
 	m_up.Set(0, 1, 0);
 	m_pos = ship->m_pos;
 	m_pos.y += 6.0f;
-	m_fov = 60.0f;
+	m_fov = 55.0f;
 }
 
 

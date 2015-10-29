@@ -90,7 +90,7 @@ void ShipPlayer::Advance()
 	
 		if (onJumpPad)
         {
-			m_whackVel.y = 85.0f;
+			m_whackVel.y = 75.0f;
             g_soundSystem->PlayWave("jump_pad.wav", &m_pos);
         }
 		else

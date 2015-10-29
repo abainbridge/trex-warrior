@@ -327,7 +327,7 @@ void Renderer::RenderFrame()
 
 #if EDITOR_ENABLED == 1
 	g_editor.Render();
-	CHECK_OPENGL_STATE();
+//	CHECK_OPENGL_STATE();
 #endif
 
     g_gameFont.BeginText2d();

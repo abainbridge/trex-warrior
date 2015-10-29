@@ -78,7 +78,7 @@ void App::MainLoopCommonStart()
 void App::Render()
 {
 	g_app->m_renderer->Render();
-	Sleep(1);
+	Sleep(10);
 }
 
 

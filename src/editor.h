@@ -1,6 +1,7 @@
 #ifndef INCLUDED_EDITOR_H
 #define INCLUDED_EDITOR_H
 
+#define EDITOR_ENABLED 1
 #if EDITOR_ENABLED == 1
 
 class Editor

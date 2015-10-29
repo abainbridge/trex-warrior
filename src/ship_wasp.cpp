@@ -10,9 +10,9 @@
 #include "ship_player.h"
 
 
-#define WASP_HOVER_HEIGHT 40.0f
+#define WASP_HOVER_HEIGHT 30.0f
 #define WASP_SPEED 70.0f
-#define WASP_TARGET_DISTANCE 125.0f // Wasp maneuvers until it is this distance from the target
+#define WASP_TARGET_DISTANCE 95.0f // Wasp maneuvers until it is this distance from the target
 
 
 Wasp::Wasp(Vector3 const &pos)
