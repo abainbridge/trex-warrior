@@ -8,6 +8,9 @@
 class Bomb: public GameObj
 {
 public:
+    float m_shields;
+
+public:
     Bomb(Vector3 const &pos);
 
     virtual void TakeHit(float force);

@@ -63,7 +63,8 @@ RgbaColour MissileDeath::GetRadarColour()
 // Boom
 // ****************************************************************************
 
-float const BOOM_DURATION = 1.5f;
+float const BOOM_DURATION = 0.7f;
+float const BOOM_SIZE = 130.0f;
 
 
 Boom::Boom(Vector3 const &pos)
@@ -80,15 +81,30 @@ void Boom::Render()
     double startTime = m_endTime - BOOM_DURATION;
     float size;
     if (g_gameTime < halfwayTime)
-        size = 20.0f * (g_gameTime - startTime) / halfLife;
+        size = BOOM_SIZE * (g_gameTime - startTime) / halfLife;
     else
-        size = 20.0f * (m_endTime - g_gameTime) / halfLife;
+        size = BOOM_SIZE * (m_endTime - g_gameTime) / halfLife;
 
     int tid = g_resourceManager.GetTexture("bullet.bmp");
 
-    // Red, Orange, White, Gray, Teal, Dark Teal, Very Dark Teal, 
+    RgbaColour colours[] = 
+    {
+        RgbaColour(255,0,0),
+        RgbaColour(255,178,0),
+        RgbaColour(255,255,255),
+        RgbaColour(200,200,200),
+        RgbaColour(0x90, 0xd0, 0xd0),
+        RgbaColour(0x40, 0x80, 0x80),
+        RgbaColour(0x20, 0x40, 0x40)
+    };
+    int const numColours = sizeof(colours) / sizeof(colours[0]);
 
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    Render3dSprite(g_app->m_camera->m_up, g_app->m_camera->GetRight(), m_pos,
-        size, size, tid, RgbaColour(255,0,0));
+    double fractionComplete = (g_gameTime - startTime) / BOOM_DURATION;
+    int currentColour = fractionComplete * numColours;
+
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    Vector3 pos = m_pos;
+    pos.y += size * 0.1f;
+    Render3dSprite(g_app->m_camera->m_up, g_app->m_camera->GetRight(), pos,
+        size, size, tid, colours[currentColour]);
 }

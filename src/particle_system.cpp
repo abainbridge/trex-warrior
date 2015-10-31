@@ -189,8 +189,6 @@ void ParticleSystem::Render()
 	}
 
     glDepthMask(true);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     END_PROFILE(g_app->m_profiler, "Render Particles");
 }
