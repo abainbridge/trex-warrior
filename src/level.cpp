@@ -6,6 +6,7 @@
 #include "lib/resource.h"
 
 #include "arena.h"
+#include "bomb.h"
 #include "building.h"
 #include "hud_text.h"
 #include "jump_pad.h"
@@ -47,6 +48,9 @@ Level::Level()
 
 	JumpPad *jumpPad = new JumpPad(Vector3(0, 0, 0));
 	m_objects.PushBack(jumpPad);
+
+    Bomb *bomb = new Bomb(Vector3(-200, 0, 0));
+    m_objects.PushBack(bomb);
 
 	m_navRoutes.PushBack(new NavRoute("level1_speedy"));
 

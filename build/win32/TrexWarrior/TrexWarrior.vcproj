@@ -1043,6 +1043,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\bomb.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\bomb.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\building.cpp"
 				>
 				<FileConfiguration

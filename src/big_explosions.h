@@ -19,4 +19,13 @@ public:
 };
 
 
+class Boom: public MissileDeath
+{
+public:
+    Boom(Vector3 const &pos);
+
+    void Render();
+};
+
+
 #endif

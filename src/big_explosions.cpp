@@ -9,7 +9,11 @@
 #include "level.h"
 
 
-#define MISSILE_DEATH_DURATION 0.5f    // Seconds
+// ****************************************************************************
+// MissileDeath
+// ****************************************************************************
+
+float const MISSILE_DEATH_DURATION = 0.5f;    // Seconds
 
 
 MissileDeath::MissileDeath(Vector3 const &pos)
@@ -52,4 +56,39 @@ void MissileDeath::Render()
 RgbaColour MissileDeath::GetRadarColour()
 {
     return g_colourBlack;
+}
+
+
+// ****************************************************************************
+// Boom
+// ****************************************************************************
+
+float const BOOM_DURATION = 1.5f;
+
+
+Boom::Boom(Vector3 const &pos)
+: MissileDeath(pos)
+{
+    m_endTime = g_gameTime + BOOM_DURATION;
+}
+
+
+void Boom::Render()
+{
+    float const halfLife = BOOM_DURATION/2.0f;
+    double halfwayTime = m_endTime - halfLife;
+    double startTime = m_endTime - BOOM_DURATION;
+    float size;
+    if (g_gameTime < halfwayTime)
+        size = 20.0f * (g_gameTime - startTime) / halfLife;
+    else
+        size = 20.0f * (m_endTime - g_gameTime) / halfLife;
+
+    int tid = g_resourceManager.GetTexture("bullet.bmp");
+
+    // Red, Orange, White, Gray, Teal, Dark Teal, Very Dark Teal, 
+
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    Render3dSprite(g_app->m_camera->m_up, g_app->m_camera->GetRight(), m_pos,
+        size, size, tid, RgbaColour(255,0,0));
 }

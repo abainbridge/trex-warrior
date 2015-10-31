@@ -22,7 +22,8 @@ public:
 		ObjTypeBullet,
 		ObjTypeMissile,
 		ObjTypeBuilding,
-		ObjTypeJumpPad
+		ObjTypeJumpPad,
+        ObjTypeBomb
     };
     
     int m_type;
