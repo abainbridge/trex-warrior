@@ -54,18 +54,6 @@ public:
 };
 
 
-// ******************
-// Class VertexPosCol
-// ******************
-
-class VertexPosCol
-{
-public:
-	unsigned short m_posId;
-	unsigned short m_colId;
-};
-
-
 // *******************
 // Class ShapeTriangle
 // *******************
@@ -73,7 +61,8 @@ public:
 class ShapeTriangle
 {
 public:
-	unsigned short v1, v2, v3;	// Vertex indices (into ShapeFragment::m_vertices)
+	unsigned short posId1, posId2, posId3;
+    unsigned short m_colId;
 };
 
 
@@ -88,7 +77,6 @@ protected:
 
 	void ParsePositionBlock		(TextFileReader *in, unsigned int numPositions);
 	void ParseColourBlock		(TextFileReader *in, unsigned int numColours);
-	void ParseVertexBlock		(TextFileReader *in, unsigned int numVerts);
 	void ParseTriangleBlock		(TextFileReader *in, unsigned int numTriangles);
 
 	void RegisterPositions		(Vector3 *positions, unsigned int numPositions);
@@ -103,8 +91,6 @@ public:
 	Vector3			*m_normals;
 	unsigned int	m_numColours;
 	RgbaColour		*m_colours;
-	unsigned int	m_numVertices;		// Each element contains an index into m_positions and an index into m_colours
-	VertexPosCol	*m_vertices;
 	unsigned int	m_numTriangles;
 	unsigned int	m_maxTriangles;
 	ShapeTriangle	*m_triangles;

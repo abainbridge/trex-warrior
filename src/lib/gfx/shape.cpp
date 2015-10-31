@@ -24,8 +24,6 @@ Shape::Shape(char const *filename)
 	m_normals(NULL),
 	m_numColours(0),
 	m_colours(NULL),
-	m_numVertices(0),
-	m_vertices(NULL),
 	m_numTriangles(0),
 	m_maxTriangles(0),
 	m_triangles(NULL),
@@ -57,11 +55,6 @@ Shape::Shape(char const *filename)
 			int numColours = atoi(secondWord);
 			ParseColourBlock(_in, numColours);
 		}
-		else if (stricmp(firstWord, "Vertices") == 0)
-		{
-			int numVerts = atoi(secondWord);
-			ParseVertexBlock(_in, numVerts);
-		}
 		else if (stricmp(firstWord, "Triangles") == 0)
 		{
 			int numTriangles = atoi(secondWord);
@@ -72,13 +65,12 @@ Shape::Shape(char const *filename)
 
 	GenerateNormals();
 
-	m_positionsInWS = new Vector3[m_numVertices];
+	m_positionsInWS = new Vector3[m_numPositions];
 }
 
 
 Shape::~Shape()
 {
-    delete [] m_vertices;		m_vertices = NULL;
     delete [] m_normals;		m_normals = NULL;
     delete [] m_colours;		m_colours = NULL;
     delete [] m_triangles;		m_triangles = NULL;
@@ -180,40 +172,6 @@ void Shape::ParseColourBlock(TextFileReader *_in, unsigned int numColours)
 }
 
 
-void Shape::ParseVertexBlock(TextFileReader *_in, unsigned int numVerts)
-{
-	m_vertices = new VertexPosCol[numVerts];
-	m_numVertices = numVerts;
-
-	int expectedId = 0;
-	while (expectedId < numVerts)
-	{
-		if (_in->ReadLine() == 0)
-		{
-			DebugAssert(0);
-		}
-
-		char *c = _in->GetNextToken();
-		if (c && isdigit(c[0]))
-		{
-			int id = atoi(c);
-			if (id != expectedId || id >= numVerts)
-			{
-				DebugAssert(0);
-			}
-
-			VertexPosCol *vert = &m_vertices[id];
-			c = _in->GetNextToken();
-			vert->m_posId = atoi(c);
-			c = _in->GetNextToken();
-			vert->m_colId = atoi(c);
-
-			expectedId++;
-		}
-	}
-}
-
-
 void Shape::ParseTriangleBlock(TextFileReader *_in, unsigned int numTriangles)
 {
 	DebugAssert(m_numTriangles == 0 && m_maxTriangles == 1 && m_triangles != NULL);
@@ -225,12 +183,16 @@ void Shape::ParseTriangleBlock(TextFileReader *_in, unsigned int numTriangles)
 	while (m_numTriangles < numTriangles)
 	{
 		_in->ReadLine();
-		char *c = _in->GetNextToken();
-		m_triangles[m_numTriangles].v1 = atoi(c);
+
+        char *c = _in->GetNextToken();
+		m_triangles[m_numTriangles].posId1 = atoi(c);
 		c = _in->GetNextToken();
-		m_triangles[m_numTriangles].v2 = atoi(c);
+		m_triangles[m_numTriangles].posId2 = atoi(c);
 		c = _in->GetNextToken();
-		m_triangles[m_numTriangles].v3 = atoi(c);
+		m_triangles[m_numTriangles].posId3 = atoi(c);
+
+        c = _in->GetNextToken();
+        m_triangles[m_numTriangles].m_colId = atoi(c);
 
 		m_numTriangles++;
 	}
@@ -249,12 +211,9 @@ void Shape::GenerateNormals()
 	for (int j = 0; j < m_numTriangles; ++j)
 	{
 		ShapeTriangle *tri = &m_triangles[j];
-		VertexPosCol const &vertA = m_vertices[tri->v1];
-		VertexPosCol const &vertB = m_vertices[tri->v2];
-		VertexPosCol const &vertC = m_vertices[tri->v3];
-		Vector3 &a = m_positions[vertA.m_posId];
-		Vector3 &b = m_positions[vertB.m_posId];
-		Vector3 &c = m_positions[vertC.m_posId];
+		Vector3 &a = m_positions[tri->posId1];
+		Vector3 &b = m_positions[tri->posId2];
+		Vector3 &c = m_positions[tri->posId3];
 		Vector3 ab = b - a;
 		Vector3 bc = c - b;
 		m_normals[normId] = ab.CrossProduct(bc);
@@ -337,32 +296,15 @@ void Shape::RenderSlow()
 	int norm = 0;
 	for (int i = 0; i < m_numTriangles; i++)
 	{
-		VertexPosCol const *vertA = &m_vertices[m_triangles[i].v1];
-		VertexPosCol const *vertB = &m_vertices[m_triangles[i].v2];
-		VertexPosCol const *vertC = &m_vertices[m_triangles[i].v3];
-		
-        unsigned char const alpha = 255;
-
-		glNormal3fv(m_normals[norm].GetData());
-		glColor4ub (m_colours[vertA->m_colId].r,
-                    m_colours[vertA->m_colId].g,
-                    m_colours[vertA->m_colId].b,
-                    alpha);
-		glVertex3fv(m_positions[vertA->m_posId].GetData());
-
-		glNormal3fv(m_normals[norm].GetData());
-		glColor4ub (m_colours[vertB->m_colId].r,
-                    m_colours[vertB->m_colId].g,
-                    m_colours[vertB->m_colId].b,
-                    alpha);
-		glVertex3fv(m_positions[vertB->m_posId].GetData());
+        ShapeTriangle *tri = &m_triangles[i];
 		
 		glNormal3fv(m_normals[norm].GetData());
-		glColor4ub (m_colours[vertC->m_colId].r,
-                    m_colours[vertC->m_colId].g,
-                    m_colours[vertC->m_colId].b,
-                    alpha);
-		glVertex3fv(m_positions[vertC->m_posId].GetData());		
+		glColor4ubv(m_colours[tri->m_colId].GetData());
+
+		glVertex3fv(m_positions[tri->posId1].GetData());
+		glVertex3fv(m_positions[tri->posId2].GetData());
+		glVertex3fv(m_positions[tri->posId3].GetData());
+
 		norm++;
 	}
 
@@ -391,14 +333,12 @@ bool Shape::RayHit(RayPackage *package, Matrix34 const &transform, bool accurate
 		// Check each triangle in this fragment for intersection
 		for (int j = 0; j < m_numTriangles; ++j)
 		{
-			VertexPosCol *v1 = &m_vertices[m_triangles[j].v1];
-			VertexPosCol *v2 = &m_vertices[m_triangles[j].v2];
-			VertexPosCol *v3 = &m_vertices[m_triangles[j].v3];
+            ShapeTriangle *tri = m_triangles + j;
 			if (RayTriIntersection(package->m_rayStart,
 								   package->m_rayDir,
-								   m_positionsInWS[v1->m_posId],
-								   m_positionsInWS[v2->m_posId],
-								   m_positionsInWS[v3->m_posId]))
+								   m_positionsInWS[tri->posId1],
+								   m_positionsInWS[tri->posId2],
+								   m_positionsInWS[tri->posId3]))
 				return true;
 		}
 	}
@@ -427,14 +367,12 @@ bool Shape::SphereHit(SpherePackage *package, Matrix34 const &transform, bool ac
 		// Check each triangle in this fragment for intersection
 		for (int j = 0; j < m_numTriangles; ++j)
 		{
-			VertexPosCol *v1 = &m_vertices[m_triangles[j].v1];
-			VertexPosCol *v2 = &m_vertices[m_triangles[j].v2];
-			VertexPosCol *v3 = &m_vertices[m_triangles[j].v3];
+            ShapeTriangle *tri = m_triangles + j;
 			if (SphereTriangleIntersection(package->m_pos,
 										   package->m_radius,
-										   m_positionsInWS[v1->m_posId],
-										   m_positionsInWS[v2->m_posId],
-										   m_positionsInWS[v3->m_posId]))
+                                           m_positionsInWS[tri->posId1],
+                                           m_positionsInWS[tri->posId2],
+										   m_positionsInWS[tri->posId3]))
 				return true;
 		}
 	}
