@@ -58,7 +58,10 @@ void App::MainLoopCommonStart()
 
 	// Toggle the editor?
 	if (g_keyDeltas[KEY_F1])
-		m_requestedState = StateEditLocation;
+		if (m_requestedState == StateEditLocation)
+            m_requestedState = StatePlayLocation;
+        else
+            m_requestedState = StateEditLocation;
 
 	if (g_app->m_requestedState == StateQuit)
 		exit(0);

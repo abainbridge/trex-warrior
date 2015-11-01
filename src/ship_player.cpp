@@ -102,7 +102,7 @@ void ShipPlayer::Advance()
 	}
 
 	// Collisions with buildings and arena perimeter
-	SpherePackage hitPackage(m_pos, 20.0f);
+	SpherePackage hitPackage(m_pos, 16.0f);
 	for (int i = 0; i < g_level->m_objects.Size(); i++)
 	{
 		GameObj *o = g_level->m_objects[i];
