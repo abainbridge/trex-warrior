@@ -21,9 +21,14 @@ public:
 
 class Boom: public MissileDeath
 {
+private:
+    float m_nextDamageCheckTime;
+    float GetSize();
+
 public:
     Boom(Vector3 const &pos);
 
+    void Advance();
     void Render();
 };
 

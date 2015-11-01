@@ -11,7 +11,7 @@ Bomb::Bomb(Vector3 const &pos)
 : GameObj(ObjTypeBomb, pos)
 {
     m_shape = g_resourceManager.GetShape("bomb.shp");
-    m_shields = 2.0f;
+    m_shields = 1.0f;
 }
 
 

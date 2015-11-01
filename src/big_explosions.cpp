@@ -1,6 +1,7 @@
 #include "lib/universal_include.h"
 #include "big_explosions.h"
 
+#include "lib/gfx/shape.h"
 #include "lib/gfx/simple_primitives.h"
 #include "lib/hi_res_time.h"
 #include "lib/resource.h"
@@ -64,17 +65,19 @@ RgbaColour MissileDeath::GetRadarColour()
 // ****************************************************************************
 
 float const BOOM_DURATION = 0.7f;
-float const BOOM_SIZE = 130.0f;
+float const BOOM_SIZE = 150.0f;
+float const BOOM_DAMAGE_CHECK_PERIOD = 0.05f;
 
 
 Boom::Boom(Vector3 const &pos)
 : MissileDeath(pos)
 {
     m_endTime = g_gameTime + BOOM_DURATION;
+    m_nextDamageCheckTime = g_gameTime + BOOM_DAMAGE_CHECK_PERIOD;
 }
 
 
-void Boom::Render()
+float Boom::GetSize()
 {
     float const halfLife = BOOM_DURATION/2.0f;
     double halfwayTime = m_endTime - halfLife;
@@ -84,6 +87,45 @@ void Boom::Render()
         size = BOOM_SIZE * (g_gameTime - startTime) / halfLife;
     else
         size = BOOM_SIZE * (m_endTime - g_gameTime) / halfLife;
+    return size;
+}
+
+
+void Boom::Advance()
+{
+    MissileDeath::Advance();
+
+    while (g_gameTime > m_nextDamageCheckTime)
+    {
+        float const size = GetSize();
+
+        int numObjs = g_level->m_objects.Size();
+        for (int i = 0; i < numObjs; i++)
+        {
+            GameObj *o = g_level->m_objects[i];
+            if (o == this)
+                continue;
+
+            if (!o->m_shape)
+                continue;
+
+            if (o->m_type == ObjTypeBullet || o->m_type == ObjTypeJumpPad)
+                continue;
+
+            SpherePackage sp(m_pos, size);
+            Matrix34 osMat(o->m_front, g_upVector, o->m_pos);	
+            if (o->m_shape->SphereHit(&sp, osMat, true))
+                 o->TakeHit(1.0f);
+        }
+
+        m_nextDamageCheckTime += BOOM_DAMAGE_CHECK_PERIOD;
+    }
+}
+
+
+void Boom::Render()
+{
+    float const size = GetSize();
 
     int tid = g_resourceManager.GetTexture("bullet.bmp");
 
@@ -99,6 +141,7 @@ void Boom::Render()
     };
     int const numColours = sizeof(colours) / sizeof(colours[0]);
 
+    double startTime = m_endTime - BOOM_DURATION;
     double fractionComplete = (g_gameTime - startTime) / BOOM_DURATION;
     int currentColour = fractionComplete * numColours;
 
