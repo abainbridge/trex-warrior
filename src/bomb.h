@@ -13,6 +13,8 @@ public:
 public:
     Bomb(Vector3 const &pos);
 
+    virtual void Advance();
+
     virtual void TakeHit(float force);
 
     virtual RgbaColour GetRadarColour();
