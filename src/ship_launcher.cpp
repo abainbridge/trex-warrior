@@ -61,7 +61,9 @@ void Launcher::Advance()
 		if (g_gameTime > m_nextFireTime)
 		{
 			m_nextFireTime += 8.0f;
-			g_level->AddObj(new Missile(this, g_level->m_playerShip, m_pos, m_front));
+            Vector3 pos = m_pos;
+            pos.y += 15.0f;
+			g_level->AddObj(new Missile(this, g_level->m_playerShip, pos, m_front));
 		}
 	}
 }

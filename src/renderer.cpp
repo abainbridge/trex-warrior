@@ -411,12 +411,15 @@ void Renderer::SetupFor3D() const
 
 	glEnable(GL_LIGHTING);
 
-    float ambient[] = { 0.2, 0.2, 0.2, 0 };
+    float const AMBIENT_BRIGHTNESS = 0.85f;
+    float const DIRECTIONAL_BRIGHTNESS = 0.07f;
+
+    float ambient[] = { AMBIENT_BRIGHTNESS, AMBIENT_BRIGHTNESS, AMBIENT_BRIGHTNESS, 0 };
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambient);
 
     float black[] = {0,0,0,0};
     {
-        float col[] = { 0.25f, 0.25f, 0.25f, 0.0f };
+        float col[] = { DIRECTIONAL_BRIGHTNESS, DIRECTIONAL_BRIGHTNESS, DIRECTIONAL_BRIGHTNESS, 0.0f };
         Vector3 front(-1, -0.5, -1);
         front.Normalize();
         float tmp[4];
@@ -432,7 +435,7 @@ void Renderer::SetupFor3D() const
     }
 
     {
-        float col[] = { 0.25f, 0.25f, 0.25f, 0.0f };
+        float col[] = { DIRECTIONAL_BRIGHTNESS, DIRECTIONAL_BRIGHTNESS, DIRECTIONAL_BRIGHTNESS, 0.0f };
         Vector3 front(1, -0.5, 1);
         front.Normalize();
         float tmp[4];

@@ -66,7 +66,7 @@ RgbaColour MissileDeath::GetRadarColour()
 
 float const BOOM_DURATION = 0.7f;
 float const BOOM_SIZE = 150.0f;
-float const BOOM_DAMAGE_CHECK_PERIOD = 0.05f;
+double const BOOM_DAMAGE_CHECK_PERIOD = 0.05;
 
 
 Boom::Boom(Vector3 const &pos)
@@ -94,6 +94,9 @@ float Boom::GetSize()
 void Boom::Advance()
 {
     MissileDeath::Advance();
+
+    if (g_gameTime > m_nextDamageCheckTime + 1.0f)
+        m_nextDamageCheckTime = g_gameTime - 1.0f;
 
     while (g_gameTime > m_nextDamageCheckTime)
     {

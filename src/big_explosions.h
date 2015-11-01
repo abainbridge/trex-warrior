@@ -22,7 +22,7 @@ public:
 class Boom: public MissileDeath
 {
 private:
-    float m_nextDamageCheckTime;
+    double m_nextDamageCheckTime;
     float GetSize();
 
 public:
