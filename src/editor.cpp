@@ -90,7 +90,7 @@ void Editor::Render()
 		for (int i = 0; i < nav->m_wayPoints.Size(); i++)
 		{
 			Vector2 const *pos2 = nav->m_wayPoints[i];
-			RenderSphere(Vector3(pos2->x, 0, pos2->y), 3.0f);
+			DebugRenderSphere(Vector3(pos2->x, 0, pos2->y), 3.0f);
 		}
 	}
 

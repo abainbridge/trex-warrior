@@ -2,6 +2,7 @@
 
 #include <math.h>
 
+#include "lib/gfx/debug_render.h"
 #include "lib/gfx/opengl_helper.h"
 #include "lib/gfx/rgb_colour.h"
 #include "lib/gfx/text_renderer.h"
@@ -324,6 +325,8 @@ void Renderer::RenderFrame()
 	if (g_app->m_camera->GetMode() == Camera::ModePlayerShip)
 		glDisable(GL_SCISSOR_TEST);
 	UnsetObjectLighting();
+
+    DebugRender();
 
 #if EDITOR_ENABLED == 1
 	g_editor.Render();
