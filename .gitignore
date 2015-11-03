@@ -1,0 +1,11 @@
+/build/win32/TrexWarrior/Debug
+/build/win32/TrexWarrior/Release
+/build/win32/TrexWarrior/TrexWarrior.ncb
+/build/win32/TrexWarrior/TrexWarrior.suo
+/build/win32/TrexWarrior/TrexWarrior.vcproj.*.user
+/TrexWarrior.exe
+/TrexWarrior.map
+/TrexWarrior.pdb
+/data/shapes/*.smd
+/tools/khed/autosave
+/assets/shapes/*.smd
