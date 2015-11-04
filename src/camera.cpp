@@ -148,9 +148,14 @@ void Camera::SetMode(int mode)
 
 	if (m_mode == ModeDebug)
 	{
-		m_pos.Set(0,700,0);
-		m_front.Set(0,-1,0);
-		m_up.Set(1,0,0);
+		m_pos.Set(-550, 400, 0);
+		
+        m_front.Set(1, -1, 0);
+        m_front.Normalize();
+		
+        Vector3 right = m_front.CrossProduct(g_upVector);
+        m_up = right.CrossProduct(m_front);
+        m_up.Normalize();
 	}
 }
 
