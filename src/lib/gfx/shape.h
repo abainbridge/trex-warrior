@@ -109,7 +109,7 @@ public:
 	void RenderSlow				();
 
 	bool RayHit					(RayPackage *package, Matrix34 const &transform, bool accurate = false);
-    bool SphereHit              (SpherePackage *package, Matrix34 const &transform, bool accurate = false);
+    bool SphereHit              (SpherePackage *package, Matrix34 const &transform, bool accurate, Vector3 *result = NULL);
 //     bool ShapeHit               (Shape *_shape, Matrix34 const &_theTransform,              // Transform of _shape
 //                                                 Matrix34 const &_ourTransform,              // Transform of this
 // 								 bool _accurate = false);

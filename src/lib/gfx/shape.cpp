@@ -347,7 +347,8 @@ bool Shape::RayHit(RayPackage *package, Matrix34 const &transform, bool accurate
 }
 
 
-bool Shape::SphereHit(SpherePackage *package, Matrix34 const &transform, bool accurate)
+bool Shape::SphereHit(SpherePackage *package, Matrix34 const &transform, 
+                      bool accurate, Vector3 *result)
 {
 	Matrix34 totalMatrix = transform;
 	Vector3 centre = totalMatrix * m_centre;
@@ -364,17 +365,26 @@ bool Shape::SphereHit(SpherePackage *package, Matrix34 const &transform, bool ac
 		for (int i = 0; i < m_numPositions; ++i)
 			m_positionsInWS[i] = m_positions[i] * totalMatrix;
 
+        float radius = package->m_radius;
+
 		// Check each triangle in this fragment for intersection
 		for (int j = 0; j < m_numTriangles; ++j)
 		{
             ShapeTriangle *tri = m_triangles + j;
 			if (SphereTriangleIntersection(package->m_pos,
-										   package->m_radius,
+										   radius,
                                            m_positionsInWS[tri->posId1],
                                            m_positionsInWS[tri->posId2],
-										   m_positionsInWS[tri->posId3]))
-				return true;
+										   m_positionsInWS[tri->posId3],
+                                           result))
+            {
+                Vector3 toHit = package->m_pos - *result;
+                radius = toHit.Len();
+            }
 		}
+
+        if (radius < package->m_radius)
+            return true;
 	}
 
 	return false;

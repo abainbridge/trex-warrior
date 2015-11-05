@@ -79,7 +79,8 @@ bool SphereSphereIntersection   (Vector3 const &_sphere1Pos, float _sphere1Radiu
                                   Vector3 const &_sphere2Pos, float _sphere2Radius);
 
 bool SphereTriangleIntersection(Vector3 const &sphereCentre, float sphereRadius,
-								Vector3 const &t1, Vector3 const &t2, Vector3 const &t3);
+								Vector3 const &t1, Vector3 const &t2, Vector3 const &t3,
+                                Vector3 *result = NULL);
 
 #endif
 

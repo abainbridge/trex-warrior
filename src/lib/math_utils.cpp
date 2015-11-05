@@ -339,7 +339,8 @@ bool SphereSphereIntersection(Vector3 const &_sphere1Pos, float _sphere1Radius,
 
 
 bool SphereTriangleIntersection(Vector3 const &sphereCentre, float sphereRadius,
-								Vector3 const &t1, Vector3 const &t2, Vector3 const &t3)
+								Vector3 const &t1, Vector3 const &t2, Vector3 const &t3,
+                                Vector3 *_result)
 {
 	Matrix34 planeMat;
 	GetPlaneMatrix(t1, t2, t3, &planeMat);
@@ -387,6 +388,9 @@ bool SphereTriangleIntersection(Vector3 const &sphereCentre, float sphereRadius,
 	Vector3 centreToNearestPointInPlane = sphereCentre - result;
 	if (centreToNearestPointInPlane.LenSquared() > sphereRadius * sphereRadius)
 		return false;
+
+    if (_result)
+        *_result = result;
 
 	return true;
 }
