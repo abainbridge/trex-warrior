@@ -5,6 +5,9 @@
 #include "ship.h"
 
 
+class SpherePackage;
+
+
 class Speedy: public Ship
 {
 public:
@@ -14,10 +17,12 @@ public:
 		StateMoving
 	};
 
-	NavRouteFollower *m_navRouteFollower;
 	float m_nextStateChangeTime;
 	int m_state;
 	float m_nextFireTime;
+
+private:
+    void DoMoving();
 
 public:
 	Speedy(Vector3 const &pos);
