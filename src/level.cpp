@@ -1,6 +1,7 @@
 #include "lib/universal_include.h"
 #include "level.h"
 
+#include "lib/gfx/debug_render.h"
 #include "lib/gfx/shape.h"
 #include "lib/sound/sound_system.h"
 #include "lib/resource.h"
@@ -49,10 +50,10 @@ Level::Level()
 	JumpPad *jumpPad = new JumpPad(Vector3(0, 0, 0));
 	m_objects.PushBack(jumpPad);
 
-    Bomb *bomb = new Bomb(Vector3(-340, 0, 100));
-    m_objects.PushBack(bomb);
-    bomb = new Bomb(Vector3(340, 0, 100));
-    m_objects.PushBack(bomb);
+//     Bomb *bomb = new Bomb(Vector3(-340, 0, 100));
+//     m_objects.PushBack(bomb);
+//     bomb = new Bomb(Vector3(340, 0, 100));
+//     m_objects.PushBack(bomb);
 
 	m_navRoutes.PushBack(new NavRoute("level1_speedy"));
 
@@ -71,7 +72,9 @@ Level::~Level()
 
 void Level::Advance()
 {
-	int numObjs = m_objects.Size();
+    DebugRenderClear();
+
+    int numObjs = m_objects.Size();
 	for (int i = 0; i < numObjs; i++)
 		m_objects[i]->Advance();
 

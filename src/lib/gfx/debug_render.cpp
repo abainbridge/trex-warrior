@@ -39,8 +39,14 @@ void DebugRender()
 
             static Sphere sphereRenderer;
             sphereRenderer.Render(s->pos, s->radius);
-            
-            g_spheres.MarkNotUsed(i);
         }
+    }
+}
+
+void DebugRenderClear()
+{
+    for (int i = 0; i < g_spheres.Size(); i++)
+    {
+        g_spheres.MarkNotUsed(i);
     }
 }

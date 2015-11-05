@@ -7,6 +7,7 @@
 
 void DebugRenderSphere(Vector3 const &centre, float radius, RgbaColour const &col=RgbaColour(255,255,255));
 void DebugRender();
+void DebugRenderClear();
 
 
 #endif

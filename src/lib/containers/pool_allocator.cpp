@@ -66,7 +66,6 @@ void PoolAllocator<T>::Grow()
 template <class T>
 void PoolAllocator<T>::MarkNotUsed(unsigned index)
 {
-	DebugAssert(m_pool[index].m_nextFreeIndex == IS_USED_MARKER);
     DebugAssert(index < m_size);
     
     m_pool[index].m_nextFreeIndex = m_firstFreeIndex;
