@@ -233,8 +233,7 @@ bool RayTriIntersection(Vector3 const &orig, Vector3 const &dir,
 	// calculate X, ray intersects triangle
 	result.x = (edge2 * qvec) * invDet;
 
-//    if (result.x > _rayLen) return false;
-    if (result.LenSquared() > rayLen * rayLen) 
+    if (result.x < 0 || result.x > rayLen)
 		return false;
 
 	if (_result)
@@ -249,15 +248,19 @@ bool RaySphereIntersection(Vector3 const &rayStart, Vector3 const &rayDir,
 		                    float _rayLen, Vector3 *pos, Vector3 *normal)
 {    
     Vector3 l = spherePos - rayStart;
+    float radiusSqrd = sphereRadius * sphereRadius;
     
+    if (l.LenSquared() < radiusSqrd)
+        return true;    // Ray starts inside sphere
+
 	// Find tca the distance along ray of point nearest to sphere centre.
 	// We'll call this point P
 	float tca = l * rayDir;
-    if (tca < 0.0f) return false;
+    if (tca < 0.0f)
+        return false;
     
 	// Use Pythagoras now to find dist from P to sphere centre. Actually
 	// cheaper to calc dist sqrd and compare to radius sqrd
-    float radiusSqrd = sphereRadius * sphereRadius;
     float lMagSqrd = l.LenSquared();
     float d2 = lMagSqrd - (tca * tca);
     if (d2 > radiusSqrd) return false;

@@ -183,6 +183,8 @@ void Shape::ParseTriangleBlock(TextFileReader *_in, unsigned int numTriangles)
 	while (m_numTriangles < numTriangles)
 	{
 		_in->ReadLine();
+        if (_in->m_line[0] == '\0')
+            continue;
 
         char *c = _in->GetNextToken();
 		m_triangles[m_numTriangles].posId1 = atoi(c);
@@ -338,7 +340,8 @@ bool Shape::RayHit(RayPackage *package, Matrix34 const &transform, bool accurate
 								   package->m_rayDir,
 								   m_positionsInWS[tri->posId1],
 								   m_positionsInWS[tri->posId2],
-								   m_positionsInWS[tri->posId3]))
+								   m_positionsInWS[tri->posId3],
+                                   package->m_rayLen))
 				return true;
 		}
 	}
