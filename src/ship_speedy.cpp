@@ -13,10 +13,15 @@
 #include "ship_player.h"
 
 
-#define DEBUG_SPEEDY 1
+#define DEBUG_SPEEDY 0
 
-#ifdef DEBUG_SPEEDY
+#if DEBUG_SPEEDY
 #include "lib/input.h"
+#define DEBUG_RENDER_SPHERE(pos, radius, col) DebugRenderSphere(pos, radius, col)
+#define DEBUG_RENDER_LINE(start, end, col) DebugRenderLine(start, end, col)
+#else
+#define DEBUG_RENDER_SPHERE(a, b, c)
+#define DEBUG_RENDER_LINE(a, b, c)
 #endif
 
 
@@ -24,7 +29,8 @@ static float const FULL_SPEED = 150.0f;
 static float const HOVER_HEIGHT = 4.0f;
 static float const SHIP_WIDTH = 34.0f;
 static int const HITCHECK_OBJ_TYPES = GameObj::ObjTypeBuilding | 
-                                      GameObj::ObjTypeArena;
+                                      GameObj::ObjTypeArena |
+                                      GameObj::ObjTypeBomb;
 static float LOOK_AHEAD_DIST = 70.0f;
 
 
@@ -63,17 +69,15 @@ void Speedy::LeftAndRightRayHits(bool *leftHit, Vector3 *leftHitPos, bool *right
     *leftHit = !!g_level->RayHit(&leftRay, HITCHECK_OBJ_TYPES, NULL, leftHitPos);
     *rightHit = !!g_level->RayHit(&rightRay, HITCHECK_OBJ_TYPES, NULL, rightHitPos);
 
-#ifdef DEBUG_SPEEDY
     if (*leftHit)
-        DebugRenderLine(leftRay.m_start, leftRay.m_end, RgbaColour(255, 0, 0));
+        DEBUG_RENDER_LINE(leftRay.m_start, leftRay.m_end, RgbaColour(255, 0, 0));
     else
-        DebugRenderLine(leftRay.m_start, leftRay.m_end);
+        DEBUG_RENDER_LINE(leftRay.m_start, leftRay.m_end, g_colourWhite);
 
     if (*rightHit)
-        DebugRenderLine(rightRay.m_start, rightRay.m_end, RgbaColour(255, 0, 0));
+        DEBUG_RENDER_LINE(rightRay.m_start, rightRay.m_end, RgbaColour(255, 0, 0));
     else
-        DebugRenderLine(rightRay.m_start, rightRay.m_end);
-#endif
+        DEBUG_RENDER_LINE(rightRay.m_start, rightRay.m_end, g_colourWhite);
 }
 
 
@@ -94,9 +98,8 @@ void Speedy::DoMoving()
         SpherePackage sphere((leftRayHitPos + rightRayHitPos) / 2.0f, SHIP_WIDTH / 2.0f);
         if (g_level->SphereHit(&sphere, HITCHECK_OBJ_TYPES, NULL, NULL))
         {
-#ifdef DEBUG_SPEEDY
-            DebugRenderSphere(sphere.m_pos, sphere.m_radius, RgbaColour(255, 0, 0));
-#endif
+            DEBUG_RENDER_SPHERE(sphere.m_pos, sphere.m_radius, RgbaColour(255, 0, 0));
+
             m_state = StateAvoidingCorner;
 
             // It is hard to know which way to turn to avoid the corner. A simple
@@ -111,9 +114,7 @@ void Speedy::DoMoving()
         }
         else
         {
-#ifdef DEBUG_SPEEDY
-             DebugRenderSphere(sphere.m_pos, sphere.m_radius);
-#endif
+             DEBUG_RENDER_SPHERE(sphere.m_pos, sphere.m_radius, g_colourWhite);
         }
     }
     else if (leftRayHit)
@@ -130,8 +131,21 @@ void Speedy::DoMoving()
             hitDist = LOOK_AHEAD_DIST;
         steeringTorque -= (LOOK_AHEAD_DIST - hitDist) * 0.002f * m_speed;
     }
+    else
+    {
+        SpherePackage sphere(m_pos + m_front * LOOK_AHEAD_DIST * 0.8f, SHIP_WIDTH/2.5f);
+        if (g_level->SphereHit(&sphere, HITCHECK_OBJ_TYPES, NULL, NULL))
+        {
+            steeringTorque -= 0.008f * m_speed;
+            DEBUG_RENDER_SPHERE(sphere.m_pos, sphere.m_radius, RgbaColour(255, 0, 0));
+        }
+        else
+        {
+            DEBUG_RENDER_SPHERE(sphere.m_pos, sphere.m_radius, g_colourWhite);
+        }
+    }
 
-#ifdef DEBUG_SPEEDY
+#if DEBUG_SPEEDY
     if (g_keys[KEY_LEFT])
         m_front.RotateAroundY(3.0f * g_advanceTime);
     if (g_keys[KEY_RIGHT])
@@ -189,7 +203,7 @@ void Speedy::DoAvoidingCorner()
 
 void Speedy::Advance()
 {
-	if (0 && g_gameTime > m_nextStateChangeTime)
+	if (g_gameTime > m_nextStateChangeTime)
 	{
 		if (m_state == StateMoving || m_state == StateAvoidingCorner)
 		{

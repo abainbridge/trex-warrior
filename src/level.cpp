@@ -52,10 +52,10 @@ Level::Level()
 	JumpPad *jumpPad = new JumpPad(Vector3(0, 0, 0));
 	m_objects.PushBack(jumpPad);
 
-//     Bomb *bomb = new Bomb(Vector3(-340, 0, 100));
-//     m_objects.PushBack(bomb);
-//     bomb = new Bomb(Vector3(340, 0, 100));
-//     m_objects.PushBack(bomb);
+    Bomb *bomb = new Bomb(Vector3(-340, 0, 100));
+    m_objects.PushBack(bomb);
+    bomb = new Bomb(Vector3(340, 0, 100));
+    m_objects.PushBack(bomb);
 
 	m_navRoutes.PushBack(new NavRoute("level1_speedy"));
 
