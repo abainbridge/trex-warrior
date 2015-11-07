@@ -83,7 +83,7 @@ void Speedy::LeftAndRightRayHits(bool *leftHit, Vector3 *leftHitPos, bool *right
 
 void Speedy::DoMoving()
 {
-    float steeringTorque = 0.0f;
+    m_steeringTorque = 0.0f;
     float speed = m_speed;
 
     bool leftRayHit, rightRayHit;
@@ -108,9 +108,9 @@ void Speedy::DoMoving()
             Vector3 frontCrossToCentre = m_pos;
             frontCrossToCentre.y = 0.0f;
             frontCrossToCentre = frontCrossToCentre.CrossProduct(m_front);
-            m_avoidCornerSteeringTorque = 0.02f * m_speed;
+            m_steeringTorque = 0.02f * m_speed;
             if (frontCrossToCentre.y < 0.0f)
-                m_avoidCornerSteeringTorque = -m_avoidCornerSteeringTorque;
+                m_steeringTorque = -m_steeringTorque;
         }
         else
         {
@@ -122,21 +122,21 @@ void Speedy::DoMoving()
         float hitDist = (m_pos - leftRayHitPos).Len();
         if (hitDist > LOOK_AHEAD_DIST)
             hitDist = LOOK_AHEAD_DIST;
-        steeringTorque += (LOOK_AHEAD_DIST - hitDist) * 0.002f * m_speed;
+        m_steeringTorque += (LOOK_AHEAD_DIST - hitDist) * 0.002f * m_speed;
     }
     else if (rightRayHit)
     {
         float hitDist = (m_pos - rightRayHitPos).Len();
         if (hitDist > LOOK_AHEAD_DIST)
             hitDist = LOOK_AHEAD_DIST;
-        steeringTorque -= (LOOK_AHEAD_DIST - hitDist) * 0.002f * m_speed;
+        m_steeringTorque -= (LOOK_AHEAD_DIST - hitDist) * 0.002f * m_speed;
     }
     else
     {
         SpherePackage sphere(m_pos + m_front * LOOK_AHEAD_DIST * 0.8f, SHIP_WIDTH/2.5f);
         if (g_level->SphereHit(&sphere, HITCHECK_OBJ_TYPES, NULL, NULL))
         {
-            steeringTorque -= 0.008f * m_speed;
+            m_steeringTorque -= 0.008f * m_speed;
             DEBUG_RENDER_SPHERE(sphere.m_pos, sphere.m_radius, RgbaColour(255, 0, 0));
         }
         else
@@ -160,7 +160,7 @@ void Speedy::DoMoving()
     
     if (m_speed > 0.1f)
 #endif
-    m_front.RotateAroundY(steeringTorque * g_advanceTime);
+    m_front.RotateAroundY(m_steeringTorque * g_advanceTime);
 
     m_pos += m_front * speed * g_advanceTime;
 }
@@ -168,7 +168,7 @@ void Speedy::DoMoving()
 
 void Speedy::DoAvoidingCorner()
 {
-    m_front.RotateAroundY(m_avoidCornerSteeringTorque * g_advanceTime);
+    m_front.RotateAroundY(m_steeringTorque * g_advanceTime);
 
     bool leftRayHit, rightRayHit;
     Vector3 leftRayHitPos, rightRayHitPos;
@@ -223,5 +223,18 @@ void Speedy::Advance()
     case StateMoving: DoMoving(); break;
     case StateShooting: DoShooting(); break;
     case StateAvoidingCorner: DoAvoidingCorner(); break;
+	}
+}
+
+
+void Speedy::Render()
+{
+	if (m_shields > 0)
+	{
+        Vector3 up = g_upVector;
+        up.RotateAround(m_front * m_steeringTorque * -0.1f);
+
+		Matrix34 mat(m_front, up, m_pos);
+		m_shape->Render(0.0f, mat);
 	}
 }

@@ -18,7 +18,7 @@ public:
         StateAvoidingCorner
 	};
 
-    float m_avoidCornerSteeringTorque;
+    float m_steeringTorque;
 	float m_nextStateChangeTime;
 	int m_state;
 	float m_nextFireTime;
@@ -34,7 +34,8 @@ public:
 	Speedy(Vector3 const &pos);
 	~Speedy();
 
-	void Advance();
+	virtual void Advance();
+    virtual void Render();
 
 	char const *GetName() { return "speedy"; }
 };
