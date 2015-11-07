@@ -6,7 +6,7 @@
 #include "game_obj.h"
 
 
-#define BULLET_SIZE	(10.0f)
+float const BULLET_SIZE	= 9.0f;
 
 
 class Bullet: public GameObj

@@ -17,7 +17,7 @@ Bullet::Bullet(GameObj *owner, Vector3 const &pos, Vector3 const &front)
 : GameObj(ObjTypeBullet, pos)
 {
 	m_owner = owner;
-	m_vel = front * 1000.0f;
+	m_vel = front * 900.0f;
 }
 
 
