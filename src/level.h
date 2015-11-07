@@ -42,8 +42,8 @@ public:
 
 	bool AreEnemiesAlive();	// Returns true if there are currently any enemies alive
 
-    bool RayHit(RayPackage *ray, int gameObjTypesMask, Vector3 *hitPos);
-    bool SphereHit(SpherePackage *sphere, int gameObjTypesMask, Vector3 *hitPos);
+    GameObj *RayHit(RayPackage *ray, int gameObjTypesMask, GameObj *objToIgnore, Vector3 *hitPos);
+    GameObj *SphereHit(SpherePackage *sphere, int gameObjTypesMask, GameObj *objToIgnore, Vector3 *hitPos);
 };
 
 

@@ -56,4 +56,12 @@ public:
 };
 
 
+const int OBJTYPE_MASK_ALL_DAMAGABLE = GameObj::ObjTypeBomb |
+                                       GameObj::ObjTypeLauncher |
+                                       GameObj::ObjTypeMissile |
+                                       GameObj::ObjTypePlayerShip |
+                                       GameObj::ObjTypeSpeedy |
+                                       GameObj::ObjTypeWasp;
+
+
 #endif

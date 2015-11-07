@@ -59,34 +59,20 @@ void Missile::Advance()
 		m_pos += m_front * MISSILE_SPEED * advanceTime;
 
 		// Hit check this missile against other game objects in the location
-		int numObjs = g_level->m_objects.Size();
-		for (int i = 0; i < numObjs; i++)
-		{
-			GameObj *o = g_level->m_objects[i];
-			if (o == this || o == m_owner)
-				continue;
+        SpherePackage sp(m_pos, 2.2f);
+        GameObj *o = g_level->SphereHit(&sp, OBJTYPE_MASK_ALL_DAMAGABLE, this, NULL);
+    	if (o && o != m_owner)
+        {
+			// Missile has hit something, destroy the missile
+			if (o->m_type == ObjTypePlayerShip)
+                g_level->DeleteObj(this);   // Destroy missile without drawing explosion
+            else
+                TakeHit(m_shields + 1.0f);  // Destroy missile _with_ explosion
 
-			if (!o->m_shape)
-				continue;
+            // Give damage to whatever we hit
+			o->TakeHit(4.0f);
 
-			if (o->m_type == ObjTypeJumpPad)
-				continue;
-
-			SpherePackage sp(m_pos, 2.2f);
-			Matrix34 osMat(o->m_front, g_upVector, o->m_pos);	
-			if (o->m_shape->SphereHit(&sp, osMat, true))
-			{
-				// Missile has hit something, destroy the missile
-				if (o->m_type == ObjTypePlayerShip)
-                    g_level->DeleteObj(this);
-                else
-                    TakeHit(m_shields + 1.0f);
-
-                // Give damage to whatever we hit
-				o->TakeHit(4.0f);
-
-				return;	// This missile is dead now. No need to do the rest of the time slices.
-			}
+			return;	// This missile is dead now. No need to do the rest of the time slices.
 		}
 	}
 }

@@ -398,6 +398,9 @@ bool Shape::SphereHit(SpherePackage *package, Matrix34 const &transform,
 										   m_positionsInWS[tri->posId3],
                                            result))
             {
+                if (!result)
+                    return true;
+
                 Vector3 toHit = package->m_pos - *result;
                 radius = toHit.Len();
             }

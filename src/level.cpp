@@ -160,15 +160,16 @@ bool Level::AreEnemiesAlive()
 }
 
 
-bool Level::RayHit(RayPackage *ray, int gameObjTypesMask, Vector3 *hitPos)
+GameObj *Level::RayHit(RayPackage *ray, int gameObjTypesMask, GameObj *objToIgnore, Vector3 *hitPos)
 {
+    GameObj *hitObj = NULL;
     float hitDistSqrd = FLT_MAX;
 
     int numObjs = g_level->m_objects.Size();
     for (int i = 0; i < numObjs; i++)
     {
         GameObj *o = g_level->m_objects[i];
-        if (!(o->m_type & gameObjTypesMask))
+        if (!(o->m_type & gameObjTypesMask) || o == objToIgnore)
             continue;
 
         Matrix34 osMat(o->m_front, g_upVector, o->m_pos);	
@@ -178,39 +179,44 @@ bool Level::RayHit(RayPackage *ray, int gameObjTypesMask, Vector3 *hitPos)
             float thisHitDistSqrd = (tmpHitPos - ray->m_start).LenSquared();
             if (thisHitDistSqrd < hitDistSqrd)
             {
-                *hitPos = tmpHitPos;
+                if (hitPos)
+                    *hitPos = tmpHitPos;
                 hitDistSqrd = thisHitDistSqrd;
+                hitObj = o;
             }
         }
     }
 
-    return hitDistSqrd < FLT_MAX;
+    return hitObj;
 }
 
 
-bool Level::SphereHit(SpherePackage *sphere, int gameObjTypesMask, Vector3 *hitPos)
+GameObj *Level::SphereHit(SpherePackage *sphere, int gameObjTypesMask, GameObj *objToIgnore, Vector3 *hitPos)
 {
+    GameObj *hitObj = NULL;
     float hitDistSqrd = FLT_MAX;
 
     int numObjs = g_level->m_objects.Size();
     for (int i = 0; i < numObjs; i++)
     {
         GameObj *o = g_level->m_objects[i];
-        if (!(o->m_type & gameObjTypesMask))
+        if (!(o->m_type & gameObjTypesMask) || o == objToIgnore)
             continue;
 
         Matrix34 osMat(o->m_front, g_upVector, o->m_pos);
         Vector3 tmpHitPos;
-        if (o->m_shape->SphereHit(sphere, osMat, &tmpHitPos))
+        if (o->m_shape->SphereHit(sphere, osMat, true, &tmpHitPos))
         {
             float thisHitDistSqrd = (tmpHitPos - sphere->m_pos).LenSquared();
             if (thisHitDistSqrd < hitDistSqrd)
             {
-                *hitPos = tmpHitPos;
+                if (hitPos)
+                    *hitPos = tmpHitPos;
                 hitDistSqrd = thisHitDistSqrd;
+                hitObj = o;
             }
         }
     }
 
-    return hitDistSqrd < FLT_MAX;
+    return hitObj;
 }

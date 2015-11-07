@@ -38,30 +38,13 @@ void Bullet::Advance()
 			g_level->DeleteObj(this);
 
 		// Hit check this bullet against other game objects in the location
-		int numObjs = g_level->m_objects.Size();
-		for (int i = 0; i < numObjs; i++)
+        SpherePackage sp(m_pos, BULLET_SIZE * 0.9f);
+		GameObj *o = g_level->SphereHit(&sp, OBJTYPE_MASK_ALL_DAMAGABLE | ObjTypeBuilding, m_owner, NULL);
+		if (o)
 		{
-			GameObj *o = g_level->m_objects[i];
-			if (o == this || o == m_owner)
-				continue;
-
-			if (!o->m_shape)
-				continue;
-
-			if (o->m_type == ObjTypeBullet || o->m_type == ObjTypeJumpPad)
-				continue;
-
-			SpherePackage sp(m_pos, BULLET_SIZE * 0.9f);
-			Matrix34 osMat(o->m_front, g_upVector, o->m_pos);	
-			if (o->m_shape->SphereHit(&sp, osMat, true))
-			{
-				// Bullet has hit something, destroy the bullet
-				g_level->DeleteObj(this);
-                
-				o->TakeHit(1.0f);
-
-				return;	// This bullet is dead now. No need to do the rest of the time slices.
-			}
+			g_level->DeleteObj(this);
+			o->TakeHit(1.0f);
+			return;	// This bullet is dead now. No need to do the rest of the time slices.
 		}
 	}
 }

@@ -103,37 +103,25 @@ void ShipPlayer::Advance()
 
 	// Collisions with buildings and arena perimeter
 	SpherePackage hitPackage(m_pos, 16.0f);
-	for (int i = 0; i < g_level->m_objects.Size(); i++)
-	{
-		GameObj *o = g_level->m_objects[i];
-		if (o->m_type == ObjTypeArena)
+	GameObj *o = g_level->SphereHit(&hitPackage, ObjTypeArena | ObjTypeBuilding, NULL, NULL);
+    if (o)
+    {
+        Vector3 fromCentre = m_pos - o->m_pos;
+        fromCentre.Normalize();
+        float whackHardness = fabsf(m_speed) + 10.0f;
+
+        if (o->m_type == ObjTypeArena)
 		{
-			Matrix34 osMat(o->m_front, g_upVector, o->m_pos);	
-			if (o->m_shape->SphereHit(&hitPackage, osMat, true))
-			{
-				Vector3 fromCentre = m_pos - o->m_pos;
-				fromCentre.Normalize();
-                float whackHardness = fabsf(m_speed) + 10.0f;
-				m_whackVel = fromCentre * whackHardness * -0.4f;
-				m_pos += m_whackVel * 0.1f;
-				m_speed = 0.0f;
-			}
+			m_whackVel = fromCentre * whackHardness * -0.4f;
 		}
 		else if (o->m_type == ObjTypeBuilding)
 		{
-			Matrix34 osMat(o->m_front, g_upVector, o->m_pos);	
-			if (o->m_shape->SphereHit(&hitPackage, osMat, true))
-			{
-				Vector3 fromCentre = m_pos - o->m_pos;
-				fromCentre.Normalize();
-                float whackHardness = fabsf(m_speed) + 10.0f;
-				m_whackVel = fromCentre * whackHardness * 0.6f;
-				m_pos += m_whackVel * 0.1f;
-				m_speed = 0.0f;
-
-                g_soundSystem->PlayWave("player_collide.wav", &m_pos);
-			}
+			m_whackVel = fromCentre * whackHardness * 0.6f;
+            g_soundSystem->PlayWave("player_collide.wav", &m_pos);
 		}
+        
+        m_pos += m_whackVel * 0.1f;
+        m_speed = 0.0f;
 	}
 
 	// Gravity
