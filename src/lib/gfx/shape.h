@@ -21,17 +21,17 @@ class Shape;
 class RayPackage
 {
 public:
-	Vector3 m_rayStart;
-	Vector3 m_rayEnd;
-	Vector3 m_rayDir;
-    float   m_rayLen;
+	Vector3 m_start;
+	Vector3 m_end;
+	Vector3 m_dir;
+    float   m_len;
 
 	RayPackage(Vector3 const &_start, Vector3 const &_dir, float _length = 1e10)
-	:	m_rayStart(_start),
-		m_rayDir(_dir)
+	:	m_start(_start),
+		m_dir(_dir)
 	{
-        m_rayLen = _length;
-		m_rayEnd = m_rayStart + m_rayDir * _length;
+        m_len = _length;
+		m_end = m_start + m_dir * _length;
 	}
 };
 
@@ -108,7 +108,7 @@ public:
 	void Render					(float predictionTime, Matrix34 mat);
 	void RenderSlow				();
 
-	bool RayHit					(RayPackage *package, Matrix34 const &transform, bool accurate = false);
+	bool RayHit					(RayPackage *package, Matrix34 const &transform, bool accurate, Vector3 *result = NULL);
     bool SphereHit              (SpherePackage *package, Matrix34 const &transform, bool accurate, Vector3 *result = NULL);
 //     bool ShapeHit               (Shape *_shape, Matrix34 const &_theTransform,              // Transform of _shape
 //                                                 Matrix34 const &_ourTransform,              // Transform of this

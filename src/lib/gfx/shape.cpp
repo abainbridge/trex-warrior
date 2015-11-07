@@ -314,15 +314,15 @@ void Shape::RenderSlow()
 }
 
 
-bool Shape::RayHit(RayPackage *package, Matrix34 const &transform, bool accurate)
+bool Shape::RayHit(RayPackage *package, Matrix34 const &transform, bool accurate, Vector3 *result)
 {
 	Matrix34 totalMatrix = transform;
 	Vector3 centre = totalMatrix * m_centre;
 
 	// First do bounding sphere check
 	if (m_radius > 0.0f &&
-		RaySphereIntersection(package->m_rayStart, package->m_rayDir,
-							  centre, m_radius, package->m_rayLen))
+		RaySphereIntersection(package->m_start, package->m_dir,
+							  centre, m_radius, package->m_len))
 	{
 		// Exit early to save loads of work if we don't care about accuracy too much
 		if (accurate == false)
@@ -332,18 +332,35 @@ bool Shape::RayHit(RayPackage *package, Matrix34 const &transform, bool accurate
 		for (int i = 0; i < m_numPositions; ++i)
 			m_positionsInWS[i] = m_positions[i] * totalMatrix;
 
+        Vector3 hitPos;
+        float hitDistSqrd = FLT_MAX;
+
 		// Check each triangle in this fragment for intersection
 		for (int j = 0; j < m_numTriangles; ++j)
 		{
             ShapeTriangle *tri = m_triangles + j;
-			if (RayTriIntersection(package->m_rayStart,
-								   package->m_rayDir,
+			if (RayTriIntersection(package->m_start,
+								   package->m_dir,
 								   m_positionsInWS[tri->posId1],
 								   m_positionsInWS[tri->posId2],
 								   m_positionsInWS[tri->posId3],
-                                   package->m_rayLen))
-				return true;
+                                   package->m_len,
+                                   &hitPos))
+            {
+                if (!result)
+                    return true;
+
+                float thisHitDistSqrd = (hitPos - package->m_start).LenSquared();
+                if (thisHitDistSqrd < hitDistSqrd)
+                {
+                    *result = hitPos;
+                    hitDistSqrd = thisHitDistSqrd;
+                }
+            }
 		}
+
+        if (hitDistSqrd < FLT_MAX)
+            return true;
 	}
 
 	return false;
