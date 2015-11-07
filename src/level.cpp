@@ -1,6 +1,8 @@
 #include "lib/universal_include.h"
 #include "level.h"
 
+#include <float.h>
+
 #include "lib/gfx/debug_render.h"
 #include "lib/gfx/shape.h"
 #include "lib/sound/sound_system.h"
@@ -155,4 +157,60 @@ bool Level::AreEnemiesAlive()
 	}
 
 	return false;
+}
+
+
+bool Level::RayHit(RayPackage *ray, int gameObjTypesMask, Vector3 *hitPos)
+{
+    float hitDistSqrd = FLT_MAX;
+
+    int numObjs = g_level->m_objects.Size();
+    for (int i = 0; i < numObjs; i++)
+    {
+        GameObj *o = g_level->m_objects[i];
+        if (!(o->m_type & gameObjTypesMask))
+            continue;
+
+        Matrix34 osMat(o->m_front, g_upVector, o->m_pos);	
+        Vector3 tmpHitPos;
+        if (o->m_shape->RayHit(ray, osMat, true, &tmpHitPos))
+        {
+            float thisHitDistSqrd = (tmpHitPos - ray->m_start).LenSquared();
+            if (thisHitDistSqrd < hitDistSqrd)
+            {
+                *hitPos = tmpHitPos;
+                hitDistSqrd = thisHitDistSqrd;
+            }
+        }
+    }
+
+    return hitDistSqrd < FLT_MAX;
+}
+
+
+bool Level::SphereHit(SpherePackage *sphere, int gameObjTypesMask, Vector3 *hitPos)
+{
+    float hitDistSqrd = FLT_MAX;
+
+    int numObjs = g_level->m_objects.Size();
+    for (int i = 0; i < numObjs; i++)
+    {
+        GameObj *o = g_level->m_objects[i];
+        if (!(o->m_type & gameObjTypesMask))
+            continue;
+
+        Matrix34 osMat(o->m_front, g_upVector, o->m_pos);
+        Vector3 tmpHitPos;
+        if (o->m_shape->SphereHit(sphere, osMat, &tmpHitPos))
+        {
+            float thisHitDistSqrd = (tmpHitPos - sphere->m_pos).LenSquared();
+            if (thisHitDistSqrd < hitDistSqrd)
+            {
+                *hitPos = tmpHitPos;
+                hitDistSqrd = thisHitDistSqrd;
+            }
+        }
+    }
+
+    return hitDistSqrd < FLT_MAX;
 }

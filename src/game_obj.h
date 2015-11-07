@@ -14,16 +14,16 @@ class GameObj
 public:
     enum Type
     {
-		ObjTypeArena,
-		ObjTypePlayerShip,
-		ObjTypeSpeedy,
-		ObjTypeWasp,
-		ObjTypeLauncher,
-		ObjTypeBullet,
-		ObjTypeMissile,
-		ObjTypeBuilding,
-		ObjTypeJumpPad,
-        ObjTypeBomb
+		ObjTypeArena = 1,
+		ObjTypePlayerShip = 2,
+		ObjTypeSpeedy = 4,
+		ObjTypeWasp = 8,
+		ObjTypeLauncher = 16,
+		ObjTypeBullet = 32,
+		ObjTypeMissile = 64,
+		ObjTypeBuilding = 128,
+		ObjTypeJumpPad = 256,
+        ObjTypeBomb = 512
     };
     
     int m_type;
@@ -39,6 +39,8 @@ public:
 		m_front.Set(1, 0, 0);
 		m_shape = NULL;
 	}
+
+    Vector3 GetRight() { return m_front.CrossProduct(g_upVector); }
 
 	virtual void Advance() {};
     virtual void Render();

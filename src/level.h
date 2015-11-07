@@ -8,9 +8,11 @@
 class Arena;
 class GameObj;
 class NavRoute;
+class RayPackage;
 class Script;
 class ShipPlayer;
 class Shape;
+class SpherePackage;
 class Vector3;
 
 
@@ -39,6 +41,9 @@ public:
     void SpawnEnemy(int objType, Vector3 const *pos);
 
 	bool AreEnemiesAlive();	// Returns true if there are currently any enemies alive
+
+    bool RayHit(RayPackage *ray, int gameObjTypesMask, Vector3 *hitPos);
+    bool SphereHit(SpherePackage *sphere, int gameObjTypesMask, Vector3 *hitPos);
 };
 
 
