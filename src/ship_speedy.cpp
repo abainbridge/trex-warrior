@@ -1,6 +1,7 @@
 #include "lib/universal_include.h"
 #include "ship_speedy.h"
 
+#include <float.h>
 #include "lib/gfx/debug_render.h"
 #include "lib/gfx/shape.h"
 #include "lib/sound/sound_system.h"
@@ -12,14 +13,26 @@
 #include "ship_player.h"
 
 
-#define SPEEDY_HOVER_HEIGHT 4.0f
+#define DEBUG_SPEEDY 1
+
+#ifdef DEBUG_SPEEDY
+#include "lib/input.h"
+#endif
+
+
+static float const FULL_SPEED = 150.0f;
+static float const HOVER_HEIGHT = 4.0f;
+static float const SHIP_WIDTH = 34.0f;
+static int const HITCHECK_OBJ_TYPES = GameObj::ObjTypeBuilding | 
+                                      GameObj::ObjTypeArena;
+static float LOOK_AHEAD_DIST = 70.0f;
 
 
 Speedy::Speedy(Vector3 const &pos)
 : Ship(ObjTypeSpeedy, pos)
 {
-	m_pos.y = SPEEDY_HOVER_HEIGHT;
-    m_speed = 40.0f;
+	m_pos.y = HOVER_HEIGHT;
+    m_speed = FULL_SPEED;
 
 	m_shape = g_resourceManager.GetShape("speedy.shp");
 
@@ -27,52 +40,104 @@ Speedy::Speedy(Vector3 const &pos)
 	m_state = StateMoving;
 }
 
-#include "lib/input.h"
+
+void Speedy::DoShooting()
+{
+    m_front = g_level->m_playerShip->m_pos - m_pos;
+    m_front.y = 0.0f;
+    m_front.Normalize();
+    if (g_gameTime > m_nextFireTime)
+    {
+        m_nextFireTime += 0.9f;
+        g_level->AddObj(new Bullet(this, m_pos, m_front));
+        g_soundSystem->PlayWave("enemy_shoot.wav", &m_pos);
+    }
+}
+
+
+void Speedy::LeftAndRightRayHits(bool *leftHit, Vector3 *leftHitPos, bool *rightHit, Vector3 *rightHitPos)
+{
+    RayPackage leftRay(m_pos + (SHIP_WIDTH/2.0f) * GetRight(), m_front, LOOK_AHEAD_DIST);
+    RayPackage rightRay(m_pos - (SHIP_WIDTH/2.0f) * GetRight(), m_front, LOOK_AHEAD_DIST);
+
+    *leftHit = !!g_level->RayHit(&leftRay, HITCHECK_OBJ_TYPES, NULL, leftHitPos);
+    *rightHit = !!g_level->RayHit(&rightRay, HITCHECK_OBJ_TYPES, NULL, rightHitPos);
+
+#ifdef DEBUG_SPEEDY
+    if (*leftHit)
+        DebugRenderLine(leftRay.m_start, leftRay.m_end, RgbaColour(255, 0, 0));
+    else
+        DebugRenderLine(leftRay.m_start, leftRay.m_end);
+
+    if (*rightHit)
+        DebugRenderLine(rightRay.m_start, rightRay.m_end, RgbaColour(255, 0, 0));
+    else
+        DebugRenderLine(rightRay.m_start, rightRay.m_end);
+#endif
+}
+
+
 void Speedy::DoMoving()
 {
     float steeringTorque = 0.0f;
     float speed = m_speed;
 
-    SpherePackage spherePackage(m_pos + m_front * 20.0f, 35.0f);
-    DebugRenderSphere(spherePackage.m_pos, spherePackage.m_radius);
+    bool leftRayHit, rightRayHit;
+    Vector3 leftRayHitPos, rightRayHitPos;
+    LeftAndRightRayHits(&leftRayHit, &leftRayHitPos, &rightRayHit, &rightRayHitPos);
 
-    int numObjs = g_level->m_objects.Size();
-    for (int i = 0; i < numObjs; i++)
+    if (leftRayHit && rightRayHit)
     {
-        GameObj *o = g_level->m_objects[i];
-        if (o->m_type != ObjTypeBuilding && o->m_type != ObjTypeArena && o->m_type != ObjTypePlayerShip)
-            continue;
-
-        Matrix34 osMat(o->m_front, g_upVector, o->m_pos);	
-        Vector3 hitPos;
-        if (o->m_shape->SphereHit(&spherePackage, osMat, true, &hitPos))
+        // Are we heading into a corner that we will get stuck in? Or are we 
+        // trying to squeeze through a narrow gap. Let's find out by seeing
+        // if there is a gap half way between the two hit positions.
+        SpherePackage sphere((leftRayHitPos + rightRayHitPos) / 2.0f, SHIP_WIDTH / 2.0f);
+        if (g_level->SphereHit(&sphere, HITCHECK_OBJ_TYPES, NULL, NULL))
         {
-            Vector3 toHitPos = hitPos - m_pos;
-            toHitPos.y = 0.0f;
-            Vector3 frontCrossToHit = toHitPos.CrossProduct(m_front);
+#ifdef DEBUG_SPEEDY
+            DebugRenderSphere(sphere.m_pos, sphere.m_radius, RgbaColour(255, 0, 0));
+#endif
+            m_state = StateAvoidingCorner;
 
-            float toHitPosLen = toHitPos.Len();
-            toHitPos += m_front;
-            if (toHitPos.Len() > toHitPosLen)
-            {
-                DebugRenderSphere(hitPos, 5.0f, RgbaColour(0,255,255));
-                float torqueForThisHit = 0.3f / frontCrossToHit.y;
-                steeringTorque += torqueForThisHit;
-                speed /= 1.0f + fabsf(torqueForThisHit) * 20.0f;
-            }
-            else
-            {
-                DebugRenderSphere(hitPos, 5.0f, RgbaColour(255,0,255));
-            }
+            // It is hard to know which way to turn to avoid the corner. A simple
+            // strategy that seems to work is to always turn towards the centre
+            // of the arena, which is at pos (0,0,0).
+            Vector3 frontCrossToCentre = m_pos;
+            frontCrossToCentre.y = 0.0f;
+            frontCrossToCentre = frontCrossToCentre.CrossProduct(m_front);
+            m_avoidCornerSteeringTorque = 0.02f * m_speed;
+            if (frontCrossToCentre.y < 0.0f)
+                m_avoidCornerSteeringTorque = -m_avoidCornerSteeringTorque;
+        }
+        else
+        {
+#ifdef DEBUG_SPEEDY
+             DebugRenderSphere(sphere.m_pos, sphere.m_radius);
+#endif
         }
     }
+    else if (leftRayHit)
+    {
+        float hitDist = (m_pos - leftRayHitPos).Len();
+        if (hitDist > LOOK_AHEAD_DIST)
+            hitDist = LOOK_AHEAD_DIST;
+        steeringTorque += (LOOK_AHEAD_DIST - hitDist) * 0.002f * m_speed;
+    }
+    else if (rightRayHit)
+    {
+        float hitDist = (m_pos - rightRayHitPos).Len();
+        if (hitDist > LOOK_AHEAD_DIST)
+            hitDist = LOOK_AHEAD_DIST;
+        steeringTorque -= (LOOK_AHEAD_DIST - hitDist) * 0.002f * m_speed;
+    }
 
+#ifdef DEBUG_SPEEDY
     if (g_keys[KEY_LEFT])
-        steeringTorque += 0.03f;
+        m_front.RotateAroundY(3.0f * g_advanceTime);
     if (g_keys[KEY_RIGHT])
-        steeringTorque -= 0.03f;
+        m_front.RotateAroundY(-3.0f * g_advanceTime);
     if (g_keyDeltas[KEY_SPACE])
-        m_speed = 40.0f - m_speed;
+        m_speed = FULL_SPEED - m_speed;
 
     if (g_keys[KEY_MINUS_PAD])
         g_advanceTime = g_advanceTime * 0.1f;
@@ -80,17 +145,53 @@ void Speedy::DoMoving()
         g_advanceTime = g_advanceTime * 10.0f;
     
     if (m_speed > 0.1f)
-        m_front.RotateAroundY(steeringTorque);
+#endif
+    m_front.RotateAroundY(steeringTorque * g_advanceTime);
 
     m_pos += m_front * speed * g_advanceTime;
 }
 
 
+void Speedy::DoAvoidingCorner()
+{
+    m_front.RotateAroundY(m_avoidCornerSteeringTorque * g_advanceTime);
+
+    bool leftRayHit, rightRayHit;
+    Vector3 leftRayHitPos, rightRayHitPos;
+    LeftAndRightRayHits(&leftRayHit, &leftRayHitPos, &rightRayHit, &rightRayHitPos);
+
+    float nearestHitDist = FLT_MAX;
+    if (leftRayHit)
+    {
+        float hitDist = (leftRayHitPos - m_pos).Len();
+        nearestHitDist = hitDist;
+    }
+    if (rightRayHit)
+    {
+        float hitDist = (rightRayHitPos - m_pos).Len();
+        if (hitDist < nearestHitDist)
+            nearestHitDist = hitDist;
+    }
+
+    if (nearestHitDist > LOOK_AHEAD_DIST)
+        nearestHitDist = LOOK_AHEAD_DIST;
+    nearestHitDist -= SHIP_WIDTH;
+    if (nearestHitDist < 0.0f)
+        nearestHitDist = 0.0f;
+    float maxDist = LOOK_AHEAD_DIST - SHIP_WIDTH;
+
+    m_pos += m_front * nearestHitDist / maxDist * m_speed * g_advanceTime;
+
+    if (!leftRayHit && !rightRayHit)
+        m_state = StateMoving;
+}
+
+
 void Speedy::Advance()
 {
-	if (g_gameTime > m_nextStateChangeTime)
+	if (0 && g_gameTime > m_nextStateChangeTime)
 	{
-		if (m_state == StateMoving)
+		if (m_state == StateMoving || m_state == StateAvoidingCorner)
 		{
 			m_state = StateShooting;
 			m_nextStateChangeTime = g_gameTime + 6.0f;
@@ -103,20 +204,10 @@ void Speedy::Advance()
 		}
 	}
 
-	if (1 || m_state == StateMoving)
-	{
-        DoMoving();
-	}
-	else
-	{
-		m_front = g_level->m_playerShip->m_pos - m_pos;
-		m_front.y = 0.0f;
-		m_front.Normalize();
-		if (g_gameTime > m_nextFireTime)
-		{
-			m_nextFireTime += 0.9f;
-			g_level->AddObj(new Bullet(this, m_pos, m_front));
-            g_soundSystem->PlayWave("enemy_shoot.wav", &m_pos);
-		}
+	switch (m_state)
+    {
+    case StateMoving: DoMoving(); break;
+    case StateShooting: DoShooting(); break;
+    case StateAvoidingCorner: DoAvoidingCorner(); break;
 	}
 }
