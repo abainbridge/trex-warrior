@@ -23,7 +23,8 @@ public:
 		ObjTypeMissile = 64,
 		ObjTypeBuilding = 128,
 		ObjTypeJumpPad = 256,
-        ObjTypeBomb = 512
+        ObjTypeBomb = 512,
+        ObjTypeShieldPowerup = 1024
     };
     
     int m_type;

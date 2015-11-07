@@ -1163,6 +1163,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\shield_powerup.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\shield_powerup.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\ship.cpp"
 				>
 				<FileConfiguration

@@ -131,3 +131,11 @@ void ShipPlayer::Advance()
 	if (m_laserTemp < 0.0f)
 		m_laserTemp = 0.0f;
 }
+
+
+void ShipPlayer::IncreaseShields()
+{
+    m_shields += PLAYER_SHIP_MAX_SHIELDS / 2.0f;
+    if (m_shields > PLAYER_SHIP_MAX_SHIELDS)
+        m_shields = PLAYER_SHIP_MAX_SHIELDS;
+}

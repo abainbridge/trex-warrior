@@ -16,6 +16,7 @@
 #include "navigation.h"
 #include "particle_system.h"
 #include "script.h"
+#include "shield_powerup.h"
 #include "ship_launcher.h"
 #include "ship_player.h"
 #include "ship_speedy.h"
@@ -57,7 +58,12 @@ Level::Level()
     bomb = new Bomb(Vector3(340, 0, 100));
     m_objects.PushBack(bomb);
 
-	m_navRoutes.PushBack(new NavRoute("level1_speedy"));
+    ShieldPowerup *shieldPowerup = new ShieldPowerup(Vector3(-40, 0, 370));
+    m_objects.PushBack(shieldPowerup);
+    shieldPowerup = new ShieldPowerup(Vector3(40, 0, 370));
+    m_objects.PushBack(shieldPowerup);
+
+    m_navRoutes.PushBack(new NavRoute("level1_speedy"));
 
 	m_script = new Script("data/scripts/level1.txt");
 

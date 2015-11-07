@@ -24,6 +24,8 @@ public:
 	~ShipPlayer();
 
 	void Advance();
+
+    void IncreaseShields();
 };
 
 
