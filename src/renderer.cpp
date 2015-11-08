@@ -82,7 +82,37 @@ void Renderer::RenderBackground()
 	glTexCoord2f(0.95f, 0.61f);	glVertex2f(0, screenH * 0.67f);
 	glEnd();
 
-	glDisable(GL_TEXTURE_2D);
+    // Render Sun
+    {
+        Vector3 frontCrossX = g_app->m_camera->m_front.CrossProduct(Vector3(1,0,0));
+        float frontDotX = g_app->m_camera->m_front * Vector3(1,0,0);
+        float theta = acos(frontDotX);
+        if (frontCrossX.y < 0.0f)
+            theta = -theta;
+        float foo = tan(theta);
+        float signFoo = signf(foo);
+        foo = 0.68 / foo;
+        float x = screenW / 2 + foo * screenW;
+        float y = screenH * 0.46f;
+        float w = screenW * 0.035f;
+        float h = screenH * 0.05091f;
+        x -= w;
+        int sunTexture = g_resourceManager.GetTexture("sun.bmp");
+        glBindTexture(GL_TEXTURE_2D, sunTexture);
+        glBegin(GL_QUADS);
+        glTexCoord2f(0.0f, 1.0f);	glVertex2f(x - w, y - h);
+        glTexCoord2f(1.0f, 1.0f);	glVertex2f(x + w, y - h);
+        glTexCoord2f(1.0f, 0.0f);	glVertex2f(x + w, y + h);
+        glTexCoord2f(0.0f, 0.0f);	glVertex2f(x - w, y + h);
+        x += w * 2.0f;
+        glTexCoord2f(1.0f, 1.0f);	glVertex2f(x - w, y - h);
+        glTexCoord2f(0.0f, 1.0f);	glVertex2f(x + w, y - h);
+        glTexCoord2f(0.0f, 0.0f);	glVertex2f(x + w, y + h);
+        glTexCoord2f(1.0f, 0.0f);	glVertex2f(x - w, y + h);
+        glEnd();
+    }
+
+    glDisable(GL_TEXTURE_2D);
 
 	END_PROFILE(g_app->m_profiler, "Render Background");
 }
