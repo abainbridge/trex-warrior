@@ -3,6 +3,7 @@
 
 #include "lib/gfx/shape.h"
 #include "lib/sound/sound_system.h"
+#include "lib/hi_res_time.h"
 #include "lib/input.h"
 #include "lib/math_utils.h"
 #include "lib/matrix34.h"
@@ -22,13 +23,8 @@ Ship::Ship(int type, Vector3 const &pos)
 	m_front = Vector3(-1,0,0);
 	m_shields = 10.0f;
 	m_speed = 0.0f;
-
-	switch (m_type)
-	{
-	case ObjTypePlayerShip:
-		m_shape = g_resourceManager.GetShape("speedy.shp");
-		break;
-	}
+    m_whackVel = g_zeroVector;
+    m_rotateVel = 0.0f;
 }
 
 
@@ -73,6 +69,42 @@ void Ship::TakeHit(float force)
 
         g_soundSystem->PlayWave("explosion.wav", &m_pos);
     }
+}
+
+
+void Ship::Advance()
+{
+    // Collisions with buildings and arena perimeter
+    SpherePackage hitPackage(m_pos, 16.0f);
+    GameObj *o = g_level->SphereHit(&hitPackage, ObjTypeArena | ObjTypeBuilding, NULL, NULL);
+    if (o)
+    {
+        Vector3 fromCentre = m_pos - o->m_pos;
+        fromCentre.Normalize();
+        float whackHardness = fabsf(m_speed) + 10.0f;
+
+        if (o->m_type == ObjTypeArena)
+        {
+            m_whackVel = fromCentre * whackHardness * -0.4f;
+        }
+        else if (o->m_type == ObjTypeBuilding)
+        {
+            m_whackVel = fromCentre * whackHardness * 0.6f;
+            g_soundSystem->PlayWave("player_collide.wav", &m_pos);
+        }
+
+        m_pos += m_whackVel * 0.1f;
+        m_speed = 0.0f;
+    }
+
+    float amountVFriction = g_advanceTime * 0.5f;
+    float amountHFriction = g_advanceTime * 3.5f;
+    m_whackVel.x *= 1.0f - amountHFriction;
+    m_whackVel.y *= 1.0f - amountVFriction;
+    m_whackVel.z *= 1.0f - amountHFriction;
+
+    m_pos += m_whackVel * g_advanceTime;
+    m_pos += m_front * m_speed * g_advanceTime;
 }
 
 

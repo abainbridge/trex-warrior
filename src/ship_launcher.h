@@ -5,6 +5,9 @@
 #include "ship.h"
 
 
+struct NavRouteFollower;
+
+
 class Launcher: public Ship
 {
 public:

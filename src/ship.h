@@ -6,14 +6,13 @@
 #include "game_obj.h"
 
 
-struct NavRouteFollower;
-
-
 class Ship: public GameObj
 {
 public:
 	float m_shields;
 	float m_speed;
+    Vector3 m_whackVel;	// Velocity caused do to the impulse of a collision or by a JumpPad
+    float m_rotateVel;	// Velocity of the ships rotation (around the vertical axis)
 
 public:
 	Ship(int type, Vector3 const &pos);
@@ -22,7 +21,8 @@ public:
 
     virtual RgbaColour GetRadarColour() { return RgbaColour(0, 255, 255); }
 
-	void Render();
+    virtual void Advance();
+	virtual void Render();
 };
 
 

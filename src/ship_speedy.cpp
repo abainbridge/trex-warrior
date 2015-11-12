@@ -49,6 +49,7 @@ Speedy::Speedy(Vector3 const &pos)
 
 void Speedy::DoShooting()
 {
+    m_speed = 0.0f;
     m_front = g_level->m_playerShip->m_pos - m_pos;
     m_front.y = 0.0f;
     m_front.Normalize();
@@ -84,7 +85,7 @@ void Speedy::LeftAndRightRayHits(bool *leftHit, Vector3 *leftHitPos, bool *right
 void Speedy::DoMoving()
 {
     m_steeringTorque = 0.0f;
-    float speed = m_speed;
+    m_speed = FULL_SPEED;
 
     bool leftRayHit, rightRayHit;
     Vector3 leftRayHitPos, rightRayHitPos;
@@ -161,8 +162,6 @@ void Speedy::DoMoving()
     if (m_speed > 0.1f)
 #endif
     m_front.RotateAroundY(m_steeringTorque * g_advanceTime);
-
-    m_pos += m_front * speed * g_advanceTime;
 }
 
 
@@ -194,7 +193,7 @@ void Speedy::DoAvoidingCorner()
         nearestHitDist = 0.0f;
     float maxDist = LOOK_AHEAD_DIST - SHIP_WIDTH;
 
-    m_pos += m_front * nearestHitDist / maxDist * m_speed * g_advanceTime;
+    m_speed = FULL_SPEED * nearestHitDist / maxDist;
 
     if (!leftRayHit && !rightRayHit)
         m_state = StateMoving;
@@ -224,6 +223,8 @@ void Speedy::Advance()
     case StateShooting: DoShooting(); break;
     case StateAvoidingCorner: DoAvoidingCorner(); break;
 	}
+
+    Ship::Advance();
 }
 
 
