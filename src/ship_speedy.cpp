@@ -38,10 +38,7 @@ Speedy::Speedy(Vector3 const &pos)
 : Ship(ObjTypeSpeedy, pos)
 {
 	m_pos.y = HOVER_HEIGHT;
-    m_speed = FULL_SPEED;
-
 	m_shape = g_resourceManager.GetShape("speedy.shp");
-
 	m_nextStateChangeTime = g_gameTime + 2.0f;
 	m_state = StateMoving;
 }
@@ -49,7 +46,7 @@ Speedy::Speedy(Vector3 const &pos)
 
 void Speedy::DoShooting()
 {
-    m_speed = 0.0f;
+    m_targetSpeed = 0.0f;
     m_front = g_level->m_playerShip->m_pos - m_pos;
     m_front.y = 0.0f;
     m_front.Normalize();
@@ -85,7 +82,7 @@ void Speedy::LeftAndRightRayHits(bool *leftHit, Vector3 *leftHitPos, bool *right
 void Speedy::DoMoving()
 {
     m_steeringTorque = 0.0f;
-    m_speed = FULL_SPEED;
+    m_targetSpeed = FULL_SPEED;
 
     bool leftRayHit, rightRayHit;
     Vector3 leftRayHitPos, rightRayHitPos;
@@ -152,7 +149,7 @@ void Speedy::DoMoving()
     if (g_keys[KEY_RIGHT])
         m_front.RotateAroundY(-3.0f * g_advanceTime);
     if (g_keyDeltas[KEY_SPACE])
-        m_speed = FULL_SPEED - m_speed;
+        m_targetSpeed = FULL_SPEED - m_targetSpeed;
 
     if (g_keys[KEY_MINUS_PAD])
         g_advanceTime = g_advanceTime * 0.1f;
@@ -193,7 +190,7 @@ void Speedy::DoAvoidingCorner()
         nearestHitDist = 0.0f;
     float maxDist = LOOK_AHEAD_DIST - SHIP_WIDTH;
 
-    m_speed = FULL_SPEED * nearestHitDist / maxDist;
+    m_targetSpeed = FULL_SPEED * nearestHitDist / maxDist;
 
     if (!leftRayHit && !rightRayHit)
         m_state = StateMoving;

@@ -16,6 +16,10 @@
 #include "particle_system.h"
 
 
+static float const MAX_ACCELERATION = 500.0f;
+
+
+
 Ship::Ship(int type, Vector3 const &pos)
 : GameObj(type, pos)
 {
@@ -23,6 +27,7 @@ Ship::Ship(int type, Vector3 const &pos)
 	m_front = Vector3(-1,0,0);
 	m_shields = 10.0f;
 	m_speed = 0.0f;
+    m_targetSpeed = 0.0f;
     m_whackVel = g_zeroVector;
     m_rotateVel = 0.0f;
 }
@@ -102,6 +107,17 @@ void Ship::Advance()
     m_whackVel.x *= 1.0f - amountHFriction;
     m_whackVel.y *= 1.0f - amountVFriction;
     m_whackVel.z *= 1.0f - amountHFriction;
+
+    if (m_speed < m_targetSpeed)
+    {
+        m_speed += g_advanceTime * MAX_ACCELERATION;
+        if (m_speed > m_targetSpeed) m_speed = m_targetSpeed;
+    }
+    else
+    {
+        m_speed -= g_advanceTime * MAX_ACCELERATION;
+        if (m_speed < m_targetSpeed) m_speed = m_targetSpeed;
+    }
 
     m_pos += m_whackVel * g_advanceTime;
     m_pos += m_front * m_speed * g_advanceTime;

@@ -32,12 +32,12 @@ void ShipPlayer::Advance()
 
 	if (g_inputManager->m_rmb)
 	{
-		m_speed -= g_inputManager->m_mouseVelY;
-		clamp(m_speed, -30.0f, m_maxSpeed);
+		m_targetSpeed -= g_inputManager->m_mouseVelY;
+		clamp(m_targetSpeed, -30.0f, m_maxSpeed);
 	}
 
 	if (g_keys[KEY_SPACE])
-		m_speed = 0.0f;
+		m_targetSpeed = 0.0f;
 
 	if (g_inputManager->m_lmbClicked && m_laserTemp < 1.0f)
 	{
