@@ -118,3 +118,12 @@ void Matrix33::SetToIdentity()
 	u.y = 1.0f;
 	f.z = 1.0f;
 }
+
+
+void Matrix33::Normalize()
+{
+    r.Normalize();
+    u.Normalize();
+    f = r.CrossProduct(u);
+    u = f.CrossProduct(r);
+}

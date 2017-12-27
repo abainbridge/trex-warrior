@@ -18,6 +18,7 @@ public:
 	void RotateAroundZ(float angle);
 	void FastRotateAround(Vector3 const & norm, float angle);
 	void SetToIdentity();
+    void Normalize();
 };
 
 
