@@ -18,7 +18,6 @@
 #include "renderer.h"
 
 
-
 App *g_app = NULL;
 
 App::App()
@@ -32,8 +31,8 @@ App::App()
 	g_app = this;
 
 	HiresTimeInit();
-	g_prefsManager.RegisterInt("screenWidth", 1024);
-	g_prefsManager.RegisterInt("screenHeight", 768);
+	g_prefsManager.RegisterInt("screenWidth", 1600);
+	g_prefsManager.RegisterInt("screenHeight", 1100);
 	g_prefsManager.RegisterInt("windowed", 1);
 	g_prefsManager.Load("prefs.txt");
 #ifdef PROFILER_ENABLED
@@ -81,7 +80,7 @@ void App::MainLoopCommonStart()
 void App::Render()
 {
 	g_app->m_renderer->Render();
-	Sleep(10);
+	Sleep(1);
 }
 
 

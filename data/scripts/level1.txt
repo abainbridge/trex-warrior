@@ -1,8 +1,8 @@
-text TIME FOR ORIENTATION: 4 SEC.
-wait 4
-text WELCOME! IT'S YOUR FIRST DAY.
-wait 2
-spawn speedy 0
+#text TIME FOR ORIENTATION: 4 SEC.
+wait 400
+#text WELCOME! IT'S YOUR FIRST DAY.
+#wait 2
+spawn speedy 1
 wait death
 text GOOD JOB
 text FIRST DROID DESTROYED.

@@ -38,13 +38,13 @@ Level::Level()
 	Building *building = new Building(Vector3(0, 0, 320), Vector3(0,0,1));
 	m_objects.PushBack(building);
 
-    building = new Building(Vector3(-10, 0, -230), Vector3(0,0,1));
+    building = new Building(Vector3(-10, 60, -230), Vector3(0,0,1));
     m_objects.PushBack(building);
 
-    building = new Building(Vector3(10, 0, -230), Vector3(0,0,1));
-    m_objects.PushBack(building);
+//     building = new Building(Vector3(10, 0, -230), Vector3(0,0,1));
+//     m_objects.PushBack(building);
 
-	building = new Building(Vector3(-90, 0, -340), Vector3(1,0,0));
+	building = new Building(Vector3(-90, 60, -340), Vector3(1,0,0));
 	m_objects.PushBack(building);
 
 	building = new Building(Vector3(90, 0, -340), Vector3(1,0,0));
